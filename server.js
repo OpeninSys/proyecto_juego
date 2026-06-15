@@ -56,6 +56,7 @@ app.use(helmet({
     directives: {
       defaultSrc:     ["'self'"],
       scriptSrc:      ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://api.anthropic.com"],
+      scriptSrcAttr:  ["'unsafe-inline'"],  // permite onclick= como respaldo (aunque el HTML ya no los usa)
       styleSrc:       ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://fonts.gstatic.com"],
       fontSrc:        ["'self'", "https://fonts.gstatic.com"],
       imgSrc:         ["'self'", "data:", "https:"],
