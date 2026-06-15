@@ -3,32 +3,54 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="EduGame – Plataforma educativa gamificada. Aprende Matemáticas, Física, Inglés y más jugando." />
+  <meta name="theme-color" content="#0d0f1a" />
   <title>EduGame – Aprende Jugando</title>
+
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
   <style>
-    /* ──────────────────────────────────────────────
-       TOKENS
-    ────────────────────────────────────────────── */
+    /* ══════════════════════════════════════════════
+       DESIGN TOKENS
+    ══════════════════════════════════════════════ */
     :root {
-      --bg:         #0d0f1a;
-      --surface:    #151828;
-      --card:       #1c2038;
-      --border:     #2a2f52;
-      --accent:     #7c6af7;
-      --accent2:    #f7c06a;
-      --green:      #4ade80;
-      --red:        #f87171;
-      --text:       #e8eaf6;
-      --muted:      #8890b5;
-      --radius:     16px;
-      --gap:        20px;
-      --font-head:  'Nunito', sans-serif;
-      --font-body:  'Space Grotesk', sans-serif;
+      --bg:          #080b18;
+      --surface:     #0f1225;
+      --card:        #141830;
+      --card-hover:  #1a2040;
+      --border:      #232850;
+      --border-soft: #1c2240;
+      --accent:      #7c6af7;
+      --accent-dim:  rgba(124,106,247,.12);
+      --accent-glow: rgba(124,106,247,.3);
+      --accent2:     #f7c06a;
+      --accent2-dim: rgba(247,192,106,.12);
+      --green:       #4ade80;
+      --green-dim:   rgba(74,222,128,.12);
+      --red:         #f87171;
+      --red-dim:     rgba(248,113,113,.12);
+      --cyan:        #38bdf8;
+      --cyan-dim:    rgba(56,189,248,.12);
+      --pink:        #f472b6;
+      --text:        #e8eaf6;
+      --text-soft:   #b0b8d4;
+      --muted:       #636b8a;
+      --radius:      14px;
+      --radius-lg:   20px;
+      --gap:         20px;
+      --font-head:   'Nunito', sans-serif;
+      --font-body:   'Space Grotesk', sans-serif;
+      --shadow-card: 0 4px 24px rgba(0,0,0,.4);
+      --shadow-glow: 0 0 40px rgba(124,106,247,.15);
+      --transition:  .2s cubic-bezier(.4,0,.2,1);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
 
     body {
       background: var(--bg);
@@ -36,14 +58,19 @@
       font-family: var(--font-body);
       min-height: 100vh;
       overflow-x: hidden;
+      line-height: 1.6;
     }
 
-    /* ──────────────────────────────────────────────
-       ESTRELLAS DE FONDO
-    ────────────────────────────────────────────── */
-    #stars {
-      position: fixed; inset: 0; pointer-events: none; z-index: 0;
-      overflow: hidden;
+    /* ══════════════════════════════════════════════
+       ANIMATED BACKGROUND
+    ══════════════════════════════════════════════ */
+    #bg-canvas {
+      position: fixed; inset: 0; z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 60% 40% at 20% 15%, rgba(124,106,247,.07) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 35% at 80% 80%, rgba(56,189,248,.05) 0%, transparent 60%),
+        var(--bg);
     }
     .star {
       position: absolute;
@@ -51,687 +78,884 @@
       border-radius: 50%;
       animation: twinkle var(--d, 3s) var(--delay, 0s) infinite alternate ease-in-out;
     }
-    @keyframes twinkle { from { opacity: .1; } to { opacity: .9; } }
+    @keyframes twinkle { from { opacity:.05; } to { opacity:.6; } }
 
-    /* ──────────────────────────────────────────────
-       LAYOUT WRAPPER
-    ────────────────────────────────────────────── */
+    /* ══════════════════════════════════════════════
+       LAYOUT
+    ══════════════════════════════════════════════ */
     #app {
       position: relative; z-index: 1;
-      max-width: 960px;
+      max-width: 1100px;
       margin: 0 auto;
       padding: 0 16px 80px;
     }
 
-    /* ──────────────────────────────────────────────
+    /* ══════════════════════════════════════════════
        NAVBAR
-    ────────────────────────────────────────────── */
+    ══════════════════════════════════════════════ */
     nav {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 20px 0 16px;
+      padding: 18px 0;
       border-bottom: 1px solid var(--border);
-      flex-wrap: wrap;
       gap: 12px;
+      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      background: rgba(8,11,24,.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 100;
+      margin: 0 -16px;
+      padding-left: 16px;
+      padding-right: 16px;
     }
+
     .logo {
       font-family: var(--font-head);
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       font-weight: 900;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       letter-spacing: -1px;
+      cursor: pointer;
+      user-select: none;
     }
-    .logo span { font-size: 1.4rem; }
-    #nav-user {
+
+    .nav-right {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
     }
-    #user-info {
+
+    /* user chip in nav */
+    #user-chip {
       display: none;
       align-items: center;
       gap: 8px;
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 999px;
-      padding: 6px 14px 6px 8px;
+      padding: 5px 14px 5px 6px;
+      cursor: pointer;
+      transition: border-color var(--transition);
     }
-    #user-avatar {
-      width: 32px; height: 32px;
+    #user-chip:hover { border-color: var(--accent); }
+    .nav-avatar {
+      width: 30px; height: 30px;
       border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-size: .85rem;
-      font-weight: 800;
-      color: #fff;
+      font-size: .8rem; font-weight: 900; color: #fff;
       background: var(--accent);
+      flex-shrink: 0;
     }
-    #user-name { font-weight: 700; font-size: .9rem; }
-    #user-xp { font-size: .75rem; color: var(--accent2); }
+    #nav-username { font-weight: 700; font-size: .85rem; }
+    #nav-xp       { font-size: .72rem; color: var(--accent2); }
 
-    /* ──────────────────────────────────────────────
-       BOTONES
-    ────────────────────────────────────────────── */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-family: var(--font-head);
+    /* role badge */
+    .role-badge {
+      font-size: .65rem;
       font-weight: 800;
-      font-size: .9rem;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+    .role-student    { background: rgba(124,106,247,.15); color: var(--accent); border: 1px solid rgba(124,106,247,.3); }
+    .role-teacher    { background: rgba(74,222,128,.15);  color: var(--green);  border: 1px solid rgba(74,222,128,.3); }
+    .role-admin      { background: rgba(248,113,113,.15); color: var(--red);    border: 1px solid rgba(248,113,113,.3); }
+    .role-school_admin { background: rgba(247,192,106,.15); color: var(--accent2); border: 1px solid rgba(247,192,106,.3); }
+
+    /* ══════════════════════════════════════════════
+       BUTTONS
+    ══════════════════════════════════════════════ */
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: var(--font-head);
+      font-weight: 800; font-size: .88rem;
       padding: 9px 20px;
       border-radius: 999px;
-      border: none;
-      cursor: pointer;
-      transition: transform .15s, box-shadow .15s, opacity .15s;
+      border: none; cursor: pointer;
+      transition: transform var(--transition), box-shadow var(--transition), opacity var(--transition), background var(--transition);
+      white-space: nowrap;
+      text-decoration: none;
     }
-    .btn:hover  { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(124,106,247,.35); }
-    .btn:active { transform: translateY(0); }
+    .btn:hover:not(:disabled)  { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.4); }
+    .btn:active:not(:disabled) { transform: translateY(0); }
+    .btn:disabled { opacity: .45; cursor: not-allowed; transform: none !important; }
+
     .btn-primary { background: linear-gradient(135deg, #7c6af7, #9b8af9); color: #fff; }
+    .btn-primary:hover:not(:disabled) { box-shadow: 0 8px 28px rgba(124,106,247,.45); }
+
     .btn-outline {
       background: transparent;
-      border: 2px solid var(--border);
+      border: 1.5px solid var(--border);
       color: var(--text);
     }
-    .btn-outline:hover { border-color: var(--accent); box-shadow: 0 6px 20px rgba(124,106,247,.2); }
+    .btn-outline:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-dim); }
+
     .btn-danger { background: linear-gradient(135deg, #ef4444, #f87171); color: #fff; }
     .btn-gold   { background: linear-gradient(135deg, #f7c06a, #f9a83f); color: #1c1a10; }
-    .btn-sm { padding: 6px 14px; font-size: .8rem; }
-    .btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+    .btn-green  { background: linear-gradient(135deg, #22c55e, #4ade80); color: #052012; }
+    .btn-cyan   { background: linear-gradient(135deg, #0ea5e9, #38bdf8); color: #031220; }
+    .btn-ghost  { background: var(--card); border: 1px solid var(--border); color: var(--text); }
+    .btn-ghost:hover:not(:disabled) { background: var(--card-hover); }
 
-    /* ──────────────────────────────────────────────
-       PÁGINAS / VISTAS
-    ────────────────────────────────────────────── */
-    .page { display: none; animation: fadeUp .4s ease both; }
-    .page.active { display: block; }
+    .btn-sm  { padding: 6px 14px; font-size: .78rem; }
+    .btn-lg  { padding: 12px 28px; font-size: 1rem; }
+    .btn-full{ width: 100%; justify-content: center; }
+
+    /* ══════════════════════════════════════════════
+       PAGES / VIEWS
+    ══════════════════════════════════════════════ */
+    .page { display: none; }
+    .page.active { display: block; animation: fadeUp .35s ease both; }
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(18px); }
+      from { opacity: 0; transform: translateY(16px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ──────────────────────────────────────────────
-       HERO – LANDING
-    ────────────────────────────────────────────── */
-    .hero {
-      text-align: center;
-      padding: 80px 0 48px;
-    }
-    .hero-badge {
-      display: inline-block;
-      background: rgba(124,106,247,.15);
-      border: 1px solid rgba(124,106,247,.4);
-      color: var(--accent);
-      font-size: .75rem;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      border-radius: 999px;
-      padding: 5px 14px;
-      margin-bottom: 24px;
-    }
-    .hero h1 {
-      font-family: var(--font-head);
-      font-size: clamp(2.4rem, 7vw, 4.2rem);
-      font-weight: 900;
-      line-height: 1.1;
-      letter-spacing: -2px;
-      margin-bottom: 20px;
-    }
-    .hero h1 .hi { color: var(--accent2); }
-    .hero p {
-      color: var(--muted);
-      font-size: 1.05rem;
-      max-width: 520px;
-      margin: 0 auto 36px;
-      line-height: 1.7;
-    }
-    .hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-
-    /* floating subjects preview */
-    .subjects-float {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-      margin: 48px auto 0;
-      max-width: 600px;
-    }
-    .subject-chip {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 8px 16px;
-      font-size: .85rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      transition: transform .2s, border-color .2s, box-shadow .2s;
-    }
-    .subject-chip:hover {
-      transform: scale(1.08);
-      border-color: var(--accent);
-      box-shadow: 0 0 14px rgba(124,106,247,.3);
-    }
-
-    /* ──────────────────────────────────────────────
+    /* ══════════════════════════════════════════════
        CARDS
-    ────────────────────────────────────────────── */
+    ══════════════════════════════════════════════ */
     .card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 28px;
+      padding: 24px;
+      box-shadow: var(--shadow-card);
     }
     .card-title {
       font-family: var(--font-head);
-      font-weight: 800;
-      font-size: 1.1rem;
-      margin-bottom: 20px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      font-weight: 800; font-size: 1rem;
+      margin-bottom: 18px;
+      display: flex; align-items: center; gap: 8px;
     }
 
-    /* ──────────────────────────────────────────────
-       AUTH (registro / login)
-    ────────────────────────────────────────────── */
-    .auth-wrap {
-      max-width: 420px;
-      margin: 60px auto 0;
-    }
-    .auth-tabs {
-      display: flex;
-      background: var(--surface);
-      border-radius: 999px;
-      padding: 4px;
-      margin-bottom: 28px;
-    }
-    .auth-tab {
-      flex: 1;
-      text-align: center;
-      padding: 9px;
-      border-radius: 999px;
-      cursor: pointer;
-      font-family: var(--font-head);
-      font-weight: 700;
-      font-size: .9rem;
-      color: var(--muted);
-      transition: background .2s, color .2s;
-    }
-    .auth-tab.active { background: var(--accent); color: #fff; }
-
-    /* form */
-    .form-group { margin-bottom: 16px; }
+    /* ══════════════════════════════════════════════
+       FORMS
+    ══════════════════════════════════════════════ */
+    .form-group { margin-bottom: 14px; }
     .form-label {
-      display: block;
-      font-size: .8rem;
-      font-weight: 700;
-      color: var(--muted);
-      letter-spacing: .5px;
-      text-transform: uppercase;
-      margin-bottom: 6px;
+      display: block; font-size: .75rem; font-weight: 700;
+      color: var(--muted); letter-spacing: .5px;
+      text-transform: uppercase; margin-bottom: 5px;
     }
     .form-input {
       width: 100%;
       background: var(--surface);
       border: 1.5px solid var(--border);
       border-radius: 10px;
-      padding: 11px 14px;
+      padding: 10px 14px;
       color: var(--text);
-      font-family: var(--font-body);
-      font-size: .95rem;
+      font-family: var(--font-body); font-size: .92rem;
       outline: none;
-      transition: border-color .2s, box-shadow .2s;
+      transition: border-color var(--transition), box-shadow var(--transition);
     }
     .form-input:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(124,106,247,.2);
+      box-shadow: 0 0 0 3px rgba(124,106,247,.18);
     }
     .form-input::placeholder { color: var(--muted); }
+    .form-input:invalid:not(:placeholder-shown) { border-color: var(--red); }
 
     .msg {
-      margin-top: 14px;
-      border-radius: 10px;
-      padding: 11px 14px;
-      font-size: .88rem;
-      font-weight: 600;
-      display: none;
+      margin-top: 12px; border-radius: 10px;
+      padding: 10px 14px; font-size: .86rem; font-weight: 600;
+      display: none; align-items: center; gap: 8px;
     }
-    .msg.show { display: block; }
-    .msg.ok   { background: rgba(74,222,128,.1); border: 1px solid rgba(74,222,128,.3); color: var(--green); }
-    .msg.err  { background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.3); color: var(--red); }
+    .msg.show { display: flex; }
+    .msg.ok  { background: var(--green-dim); border: 1px solid rgba(74,222,128,.3); color: var(--green); }
+    .msg.err { background: var(--red-dim);   border: 1px solid rgba(248,113,113,.3); color: var(--red); }
 
-    /* ──────────────────────────────────────────────
-       DASHBOARD
-    ────────────────────────────────────────────── */
-    .dash-header {
-      padding: 44px 0 28px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
+    /* ══════════════════════════════════════════════
+       LANDING PAGE
+    ══════════════════════════════════════════════ */
+    .hero {
+      text-align: center;
+      padding: 80px 0 56px;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--accent-dim);
+      border: 1px solid rgba(124,106,247,.35);
+      color: var(--accent);
+      font-size: .72rem; font-weight: 800;
+      letter-spacing: 2px; text-transform: uppercase;
+      border-radius: 999px; padding: 5px 14px;
+      margin-bottom: 28px;
+      animation: fadeUp .5s .1s ease both;
+    }
+    .hero h1 {
+      font-family: var(--font-head);
+      font-size: clamp(2.2rem, 6vw, 4rem);
+      font-weight: 900; line-height: 1.1;
+      letter-spacing: -2px; margin-bottom: 20px;
+      animation: fadeUp .5s .2s ease both;
+    }
+    .hero h1 .hi {
+      background: linear-gradient(135deg, var(--accent2), #f97316);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      color: var(--text-soft);
+      font-size: 1.05rem; max-width: 500px;
+      margin: 0 auto 40px; line-height: 1.7;
+      animation: fadeUp .5s .3s ease both;
+    }
+    .hero-btns {
+      display: flex; gap: 12px; justify-content: center;
       flex-wrap: wrap;
-      gap: 12px;
+      animation: fadeUp .5s .4s ease both;
+    }
+
+    /* subjects pill cloud */
+    .pills-cloud {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      justify-content: center; margin: 52px auto 0;
+      max-width: 640px;
+      animation: fadeUp .5s .5s ease both;
+    }
+    .pill {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 999px; padding: 8px 16px;
+      font-size: .84rem; font-weight: 700;
+      display: flex; align-items: center; gap: 6px;
+      cursor: pointer;
+      transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+    }
+    .pill:hover {
+      transform: scale(1.07);
+      border-color: var(--accent);
+      box-shadow: 0 0 16px var(--accent-glow);
+    }
+
+    /* feature cards on landing */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: var(--gap); margin-top: 60px;
+    }
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px 24px;
+      text-align: center;
+      transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+    }
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-glow);
+      border-color: rgba(124,106,247,.35);
+    }
+    .feature-icon { font-size: 2.4rem; margin-bottom: 14px; display: block; }
+    .feature-title { font-family: var(--font-head); font-weight: 800; font-size: 1rem; margin-bottom: 8px; }
+    .feature-desc  { color: var(--text-soft); font-size: .84rem; line-height: 1.6; }
+
+    /* ══════════════════════════════════════════════
+       AUTH PAGE
+    ══════════════════════════════════════════════ */
+    .auth-wrap { max-width: 420px; margin: 56px auto 0; }
+    .auth-tabs {
+      display: flex;
+      background: var(--surface);
+      border-radius: 999px; padding: 4px;
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
+    }
+    .auth-tab {
+      flex: 1; text-align: center; padding: 9px;
+      border-radius: 999px; cursor: pointer;
+      font-family: var(--font-head); font-weight: 700; font-size: .88rem;
+      color: var(--muted);
+      transition: background var(--transition), color var(--transition);
+    }
+    .auth-tab.active { background: var(--accent); color: #fff; }
+
+    .two-col {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    }
+    @media (max-width: 420px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* password strength */
+    .pw-bar {
+      height: 4px; border-radius: 999px;
+      background: var(--border); overflow: hidden; margin-top: 6px;
+    }
+    .pw-fill { height: 100%; border-radius: 999px; transition: width .3s, background .3s; width: 0%; }
+
+    /* ══════════════════════════════════════════════
+       STUDENT DASHBOARD
+    ══════════════════════════════════════════════ */
+    .dash-header {
+      padding: 40px 0 24px;
+      display: flex; align-items: flex-end;
+      justify-content: space-between; flex-wrap: wrap; gap: 12px;
     }
     .dash-greeting {
       font-family: var(--font-head);
-      font-size: 1.8rem;
-      font-weight: 900;
-      letter-spacing: -1px;
+      font-size: 1.7rem; font-weight: 900; letter-spacing: -1px;
     }
     .dash-greeting em { color: var(--accent2); font-style: normal; }
+    .dash-sub { color: var(--text-soft); font-size: .88rem; margin-top: 2px; }
 
-    /* stats bar */
-    .stats-row {
+    /* stats */
+    .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: var(--gap);
-      margin-bottom: var(--gap);
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px; margin-bottom: var(--gap);
     }
     .stat-card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 20px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
+      padding: 20px 16px; text-align: center;
+      position: relative; overflow: hidden;
+      transition: transform var(--transition), box-shadow var(--transition);
     }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-card); }
     .stat-card::before {
       content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, var(--accent-c, #7c6af744) 0%, transparent 60%);
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--accent-c, rgba(124,106,247,.08)) 0%, transparent 60%);
       pointer-events: none;
     }
     .stat-num {
       font-family: var(--font-head);
-      font-size: 2rem;
-      font-weight: 900;
-      color: var(--accent);
-      line-height: 1;
+      font-size: 1.9rem; font-weight: 900;
+      color: var(--accent); line-height: 1;
     }
-    .stat-label { font-size: .75rem; color: var(--muted); margin-top: 4px; font-weight: 600; text-transform: uppercase; }
+    .stat-label { font-size: .7rem; color: var(--muted); margin-top: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+    .stat-icon  { font-size: 1.1rem; margin-bottom: 8px; opacity: .7; }
 
-    /* level bar */
-    .level-bar-wrap { margin: 6px 0 20px; }
-    .level-bar-label { display: flex; justify-content: space-between; font-size: .78rem; color: var(--muted); margin-bottom: 5px; }
-    .level-bar {
-      height: 8px;
-      background: var(--border);
-      border-radius: 999px;
-      overflow: hidden;
+    /* XP bar */
+    .xp-bar-wrap { margin-bottom: var(--gap); }
+    .xp-bar-meta {
+      display: flex; justify-content: space-between;
+      font-size: .76rem; color: var(--muted); margin-bottom: 6px;
     }
-    .level-bar-fill {
+    .xp-bar {
+      height: 8px; background: var(--border);
+      border-radius: 999px; overflow: hidden;
+    }
+    .xp-bar-fill {
       height: 100%;
       background: linear-gradient(90deg, var(--accent), var(--accent2));
       border-radius: 999px;
-      transition: width .6s cubic-bezier(.4,0,.2,1);
+      transition: width .8s cubic-bezier(.4,0,.2,1);
     }
 
     /* subject grid */
-    .subject-grid {
+    .subjects-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: var(--gap);
-      margin-bottom: var(--gap);
+      grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+      gap: var(--gap); margin-bottom: var(--gap);
     }
     .subj-card {
       background: var(--card);
       border: 1.5px solid var(--border);
       border-radius: var(--radius);
-      padding: 22px 18px;
-      cursor: pointer;
-      transition: transform .2s, border-color .2s, box-shadow .2s;
-      position: relative;
-      overflow: hidden;
+      padding: 20px 16px; cursor: pointer;
+      transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+      position: relative; overflow: hidden;
     }
     .subj-card:hover {
-      transform: translateY(-4px);
+      transform: translateY(-5px);
       border-color: var(--accent);
-      box-shadow: 0 12px 36px rgba(124,106,247,.2);
+      box-shadow: 0 16px 40px rgba(124,106,247,.2);
     }
-    .subj-icon { font-size: 2.2rem; margin-bottom: 10px; display: block; }
-    .subj-name { font-family: var(--font-head); font-weight: 800; font-size: 1rem; }
-    .subj-desc { font-size: .78rem; color: var(--muted); margin: 4px 0 12px; line-height: 1.5; }
-    .subj-score {
-      font-size: .8rem;
-      font-weight: 700;
-      color: var(--accent2);
-      display: flex;
-      align-items: center;
-      gap: 4px;
+    .subj-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      opacity: 0; transition: opacity var(--transition);
     }
-    .subj-level-badge {
-      position: absolute;
-      top: 12px; right: 12px;
-      background: rgba(124,106,247,.15);
-      border: 1px solid rgba(124,106,247,.3);
-      color: var(--accent);
-      font-size: .7rem;
-      font-weight: 800;
-      border-radius: 999px;
-      padding: 2px 8px;
+    .subj-card:hover::before { opacity: 1; }
+    .subj-icon { font-size: 2rem; margin-bottom: 10px; display: block; }
+    .subj-name { font-family: var(--font-head); font-weight: 800; font-size: .95rem; margin-bottom: 4px; }
+    .subj-desc { font-size: .76rem; color: var(--muted); line-height: 1.5; margin-bottom: 12px; }
+    .subj-meta {
+      font-size: .76rem; font-weight: 700; color: var(--text-soft);
+      display: flex; flex-wrap: wrap; gap: 6px;
+    }
+    .subj-meta span { background: var(--surface); border-radius: 6px; padding: 2px 7px; }
+    .subj-lv-badge {
+      position: absolute; top: 10px; right: 10px;
+      background: var(--accent-dim); border: 1px solid rgba(124,106,247,.35);
+      color: var(--accent); font-size: .65rem; font-weight: 800;
+      border-radius: 999px; padding: 2px 8px;
     }
 
-    /* ──────────────────────────────────────────────
+    /* ══════════════════════════════════════════════
        GAME VIEW
-    ────────────────────────────────────────────── */
+    ══════════════════════════════════════════════ */
     .game-header {
-      display: flex;
-      align-items: center;
+      display: flex; align-items: center;
       justify-content: space-between;
-      padding: 32px 0 20px;
-      gap: 12px;
-      flex-wrap: wrap;
+      padding: 28px 0 18px; gap: 12px; flex-wrap: wrap;
     }
     .game-title {
       font-family: var(--font-head);
-      font-weight: 900;
-      font-size: 1.5rem;
-      letter-spacing: -1px;
+      font-weight: 900; font-size: 1.4rem; letter-spacing: -1px;
     }
-    .score-display {
-      display: flex;
-      gap: 10px;
-      align-items: center;
+    .score-pills { display: flex; gap: 8px; }
+    .score-pill {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 999px; padding: 5px 14px;
+      font-weight: 800; font-size: .86rem;
     }
-    .score-badge {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 6px 16px;
-      font-weight: 800;
-      font-size: .9rem;
-    }
-    .score-badge .val { color: var(--accent2); }
+    .score-pill .val { color: var(--accent2); }
 
     /* question card */
     .q-card {
-      background: var(--card);
-      border: 1.5px solid var(--border);
-      border-radius: 20px;
-      padding: 36px 32px 28px;
+      background: var(--card); border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px 28px 24px;
       margin-bottom: var(--gap);
-      position: relative;
-      overflow: hidden;
+      position: relative; overflow: hidden;
     }
-    .q-card::before {
+    .q-card::after {
       content: '';
-      position: absolute;
-      top: -40px; right: -40px;
-      width: 160px; height: 160px;
-      background: radial-gradient(circle, rgba(124,106,247,.15), transparent 70%);
-      pointer-events: none;
+      position: absolute; top: -60px; right: -60px;
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, var(--accent-glow), transparent 70%);
+      pointer-events: none; opacity: .4;
     }
-    .q-num {
-      font-size: .78rem;
-      font-weight: 700;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 12px;
+    .q-meta {
+      display: flex; justify-content: space-between;
+      font-size: .74rem; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;
     }
-    .q-text {
-      font-family: var(--font-head);
-      font-size: 1.25rem;
-      font-weight: 800;
-      line-height: 1.4;
-      margin-bottom: 28px;
-    }
-    .timer-bar {
-      height: 6px;
-      background: var(--border);
-      border-radius: 999px;
-      overflow: hidden;
-      margin-bottom: 24px;
-    }
+    .timer-bar { height: 5px; background: var(--border); border-radius: 999px; overflow: hidden; margin-bottom: 22px; }
     .timer-fill {
       height: 100%;
       background: linear-gradient(90deg, var(--green), var(--accent2));
-      border-radius: 999px;
-      transition: width .1s linear, background .5s;
+      border-radius: 999px; transition: width .1s linear, background .6s;
     }
     .timer-fill.warn { background: linear-gradient(90deg, var(--accent2), var(--red)); }
-
-    /* options */
-    .options-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+    .q-text {
+      font-family: var(--font-head);
+      font-size: 1.2rem; font-weight: 800; line-height: 1.45;
+      margin-bottom: 24px;
     }
+    .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     @media (max-width: 540px) { .options-grid { grid-template-columns: 1fr; } }
+
     .option-btn {
       background: var(--surface);
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      padding: 14px 18px;
-      color: var(--text);
-      font-family: var(--font-head);
-      font-weight: 700;
-      font-size: .95rem;
-      text-align: left;
-      cursor: pointer;
-      transition: transform .15s, border-color .15s, background .15s;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      border: 2px solid var(--border); border-radius: 12px;
+      padding: 13px 16px; color: var(--text);
+      font-family: var(--font-head); font-weight: 700; font-size: .9rem;
+      text-align: left; cursor: pointer;
+      display: flex; align-items: center; gap: 10px;
+      transition: transform var(--transition), border-color var(--transition), background var(--transition);
     }
     .option-btn:hover:not(:disabled) {
       transform: scale(1.02);
       border-color: var(--accent);
-      background: rgba(124,106,247,.08);
+      background: var(--accent-dim);
     }
-    .option-btn .opt-letter {
-      width: 28px; height: 28px;
-      border-radius: 50%;
+    .opt-letter {
+      width: 28px; height: 28px; border-radius: 50%;
       background: var(--border);
       display: flex; align-items: center; justify-content: center;
-      font-size: .8rem;
-      font-weight: 900;
-      flex-shrink: 0;
+      font-size: .75rem; font-weight: 900; flex-shrink: 0;
     }
-    .option-btn.correct { border-color: var(--green); background: rgba(74,222,128,.1); }
-    .option-btn.wrong   { border-color: var(--red);   background: rgba(248,113,113,.1); }
+    .option-btn.correct { border-color: var(--green); background: var(--green-dim); }
+    .option-btn.wrong   { border-color: var(--red);   background: var(--red-dim); }
     .option-btn.correct .opt-letter { background: var(--green); color: #fff; }
     .option-btn.wrong   .opt-letter { background: var(--red);   color: #fff; }
     .option-btn:disabled { cursor: not-allowed; }
 
-    /* feedback */
     .q-feedback {
-      margin-top: 18px;
-      padding: 14px;
-      border-radius: 12px;
-      font-weight: 700;
-      font-size: .9rem;
-      display: none;
-      align-items: center;
-      gap: 8px;
+      margin-top: 16px; padding: 12px 14px; border-radius: 10px;
+      font-weight: 700; font-size: .86rem;
+      display: none; align-items: center; gap: 8px;
     }
     .q-feedback.show { display: flex; }
-    .q-feedback.ok  { background: rgba(74,222,128,.1);  border: 1px solid rgba(74,222,128,.3);  color: var(--green); }
-    .q-feedback.err { background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.3); color: var(--red); }
+    .q-feedback.ok  { background: var(--green-dim); border: 1px solid rgba(74,222,128,.3);  color: var(--green); }
+    .q-feedback.err { background: var(--red-dim);   border: 1px solid rgba(248,113,113,.3); color: var(--red); }
 
     /* result screen */
-    .result-card {
-      text-align: center;
-      padding: 56px 28px;
-    }
-    .result-emoji { font-size: 4.5rem; display: block; margin-bottom: 20px;
-      animation: bounce .6s infinite alternate; }
-    @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-12px); } }
+    .result-card { text-align: center; padding: 52px 28px; }
+    .result-emoji { font-size: 4rem; display: block; margin-bottom: 18px; animation: bounce .7s infinite alternate; }
+    @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-14px); } }
     .result-score {
-      font-family: var(--font-head);
-      font-size: 3.5rem;
-      font-weight: 900;
-      color: var(--accent2);
-      letter-spacing: -2px;
+      font-family: var(--font-head); font-size: 3.2rem;
+      font-weight: 900; color: var(--accent2); letter-spacing: -2px;
     }
-    .result-label { color: var(--muted); margin: 6px 0 24px; }
-    .result-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-
-    /* xp pop */
-    .xp-pop {
-      position: fixed;
-      bottom: 24px; right: 24px;
-      background: linear-gradient(135deg, var(--accent), #9b8af9);
-      color: #fff;
-      padding: 12px 22px;
-      border-radius: 999px;
-      font-family: var(--font-head);
-      font-weight: 800;
-      font-size: .95rem;
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity .3s, transform .3s;
-      pointer-events: none;
-      z-index: 999;
+    .result-label { color: var(--muted); margin: 6px 0; }
+    .result-xp    { color: var(--accent); font-weight: 700; font-size: .95rem; margin-bottom: 8px; }
+    .result-badges {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      justify-content: center; margin: 16px 0;
     }
-    .xp-pop.show { opacity: 1; transform: translateY(0); }
+    .badge-chip {
+      background: var(--accent-dim); border: 1px solid rgba(124,106,247,.3);
+      color: var(--accent); padding: 4px 12px;
+      border-radius: 999px; font-size: .78rem; font-weight: 700;
+      display: flex; align-items: center; gap: 4px;
+      animation: popIn .3s ease both;
+    }
+    @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .result-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 24px; }
 
-    /* ──────────────────────────────────────────────
+    /* ══════════════════════════════════════════════
        LEADERBOARD
-    ────────────────────────────────────────────── */
+    ══════════════════════════════════════════════ */
     .lb-filters {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
+      display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px;
     }
     .lb-select {
-      background: var(--card);
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      color: var(--text);
-      padding: 8px 14px;
-      font-family: var(--font-body);
-      font-size: .88rem;
-      outline: none;
-      cursor: pointer;
+      background: var(--card); border: 1.5px solid var(--border);
+      border-radius: 10px; color: var(--text);
+      padding: 8px 12px;
+      font-family: var(--font-body); font-size: .85rem;
+      outline: none; cursor: pointer;
+      transition: border-color var(--transition);
     }
+    .lb-select:focus { border-color: var(--accent); }
+
     .lb-table { width: 100%; border-collapse: collapse; }
     .lb-table th {
-      text-align: left;
-      font-size: .75rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--muted);
-      padding: 10px 12px;
+      text-align: left; font-size: .7rem;
+      text-transform: uppercase; letter-spacing: 1px;
+      color: var(--muted); padding: 10px 12px;
       border-bottom: 1px solid var(--border);
     }
     .lb-table td {
-      padding: 13px 12px;
-      border-bottom: 1px solid rgba(42,47,82,.6);
-      font-size: .9rem;
+      padding: 12px 12px;
+      border-bottom: 1px solid var(--border-soft);
+      font-size: .88rem;
     }
     .lb-table tr:last-child td { border-bottom: none; }
-    .lb-table tr:hover td { background: rgba(124,106,247,.05); }
-    .lb-rank {
-      font-family: var(--font-head);
-      font-weight: 900;
-      width: 36px;
-      text-align: center;
-    }
-    .lb-rank.gold   { color: #f7c06a; }
+    .lb-table tbody tr:hover td { background: rgba(124,106,247,.04); }
+    .lb-rank { font-family: var(--font-head); font-weight: 900; width: 40px; text-align: center; }
+    .lb-rank.gold   { color: var(--accent2); }
     .lb-rank.silver { color: #c0c0c0; }
     .lb-rank.bronze { color: #cd7f32; }
+    .lb-user-cell   { display: flex; align-items: center; gap: 8px; }
+    .lb-avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .72rem; font-weight: 900; color: #fff; flex-shrink: 0;
+    }
     .lb-username { font-weight: 700; }
-    .lb-level { display: inline-block; background: rgba(124,106,247,.15); border: 1px solid rgba(124,106,247,.3); color: var(--accent); font-size: .72rem; font-weight: 800; border-radius: 999px; padding: 2px 8px; }
+    .lb-tag {
+      display: inline-block;
+      background: var(--accent-dim); border: 1px solid rgba(124,106,247,.25);
+      color: var(--accent); font-size: .68rem; font-weight: 800;
+      border-radius: 999px; padding: 1px 8px;
+    }
 
-    /* ──────────────────────────────────────────────
-       LOADING SPINNER
-    ────────────────────────────────────────────── */
+    /* ══════════════════════════════════════════════
+       TEACHER PANEL
+    ══════════════════════════════════════════════ */
+    .teacher-header {
+      padding: 36px 0 24px;
+      display: flex; align-items: flex-end;
+      justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    }
+    .panel-title {
+      font-family: var(--font-head);
+      font-size: 1.6rem; font-weight: 900; letter-spacing: -1px;
+    }
+
+    .students-table-wrap { overflow-x: auto; }
+    .data-table { width: 100%; border-collapse: collapse; min-width: 550px; }
+    .data-table th {
+      text-align: left; font-size: .7rem; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--muted);
+      padding: 10px 14px; border-bottom: 1px solid var(--border);
+    }
+    .data-table td {
+      padding: 13px 14px; border-bottom: 1px solid var(--border-soft);
+      font-size: .88rem; vertical-align: middle;
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tbody tr:hover td { background: rgba(124,106,247,.04); }
+
+    /* ══════════════════════════════════════════════
+       ADMIN PANEL
+    ══════════════════════════════════════════════ */
+    .admin-tabs {
+      display: flex; gap: 4px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 4px; margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .admin-tab {
+      padding: 8px 16px; border-radius: 10px;
+      font-family: var(--font-head); font-weight: 700; font-size: .84rem;
+      color: var(--muted); cursor: pointer;
+      transition: background var(--transition), color var(--transition);
+      white-space: nowrap;
+    }
+    .admin-tab.active { background: var(--accent); color: #fff; }
+
+    .admin-section { display: none; }
+    .admin-section.active { display: block; animation: fadeUp .3s ease both; }
+
+    /* admin stats overview */
+    .admin-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: var(--gap); margin-bottom: var(--gap);
+    }
+    .admin-stat {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px;
+      position: relative; overflow: hidden;
+    }
+    .admin-stat::before {
+      content: '';
+      position: absolute; top: -20px; right: -20px;
+      width: 80px; height: 80px;
+      background: radial-gradient(circle, var(--accent-glow), transparent 70%);
+      pointer-events: none;
+    }
+    .admin-stat-num { font-family: var(--font-head); font-size: 2rem; font-weight: 900; color: var(--accent); }
+    .admin-stat-label { font-size: .74rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .5px; margin-top: 2px; }
+
+    /* ══════════════════════════════════════════════
+       UI COMPONENTS
+    ══════════════════════════════════════════════ */
+
+    /* spinner */
     .spinner {
       display: inline-block;
       width: 20px; height: 20px;
-      border: 3px solid rgba(255,255,255,.2);
+      border: 2.5px solid rgba(255,255,255,.15);
       border-top-color: #fff;
       border-radius: 50%;
-      animation: spin .7s linear infinite;
+      animation: spin .65s linear infinite;
     }
+    .spinner-lg { width: 40px; height: 40px; border-width: 3px; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ──────────────────────────────────────────────
-       UTILITIES
-    ────────────────────────────────────────────── */
-    .section-title {
-      font-family: var(--font-head);
-      font-weight: 800;
-      font-size: 1.1rem;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      margin-bottom: 14px;
+    /* loading state */
+    .loading-box {
+      text-align: center; padding: 56px 20px;
+      color: var(--muted); font-weight: 600;
     }
-    .two-col {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--gap);
-    }
-    @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
-    .mt { margin-top: var(--gap); }
-    .text-center { text-align: center; }
-    .muted { color: var(--muted); }
+    .loading-box .spinner-lg { margin: 0 auto 16px; border-top-color: var(--accent); border-color: var(--accent-dim); }
 
-    /* ──────────────────────────────────────────────
-       CONFETTI (simple canvas)
-    ────────────────────────────────────────────── */
+    /* section label */
+    .section-eyebrow {
+      font-family: var(--font-head); font-weight: 800;
+      font-size: .76rem; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 2px;
+      margin-bottom: 14px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-eyebrow::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* empty state */
+    .empty-state {
+      text-align: center; padding: 48px 20px; color: var(--muted);
+    }
+    .empty-state .icon { font-size: 2.5rem; margin-bottom: 12px; opacity: .5; }
+    .empty-state p { font-size: .88rem; }
+
+    /* XP popup */
+    .xp-pop {
+      position: fixed; bottom: 24px; right: 24px;
+      background: linear-gradient(135deg, var(--accent), #9b8af9);
+      color: #fff; padding: 12px 22px;
+      border-radius: 999px;
+      font-family: var(--font-head); font-weight: 800; font-size: .92rem;
+      opacity: 0; transform: translateY(20px);
+      transition: opacity .3s, transform .3s;
+      pointer-events: none; z-index: 1000;
+      box-shadow: 0 8px 24px rgba(124,106,247,.4);
+    }
+    .xp-pop.show { opacity: 1; transform: translateY(0); }
+
+    /* confetti canvas */
     #confetti-canvas {
       position: fixed; inset: 0;
       pointer-events: none; z-index: 9999;
       display: none;
     }
+
+    /* modal overlay */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,0,0,.7); backdrop-filter: blur(4px);
+      align-items: center; justify-content: center; padding: 16px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 28px;
+      max-width: 440px; width: 100%;
+      animation: fadeUp .25s ease both;
+      position: relative;
+    }
+    .modal-close {
+      position: absolute; top: 14px; right: 14px;
+      background: var(--surface); border: none; color: var(--muted);
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 1rem;
+      transition: color var(--transition), background var(--transition);
+    }
+    .modal-close:hover { color: var(--text); background: var(--border); }
+
+    /* notification toast */
+    #toast {
+      position: fixed; top: 80px; left: 50%; transform: translateX(-50%) translateY(-12px);
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 999px; padding: 10px 20px;
+      font-weight: 700; font-size: .86rem;
+      opacity: 0; transition: opacity .3s, transform .3s;
+      pointer-events: none; z-index: 1001;
+      white-space: nowrap; max-width: 90vw;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* tab navigation bar */
+    .tab-nav {
+      display: flex; gap: 2px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px; overflow-x: auto;
+    }
+    .tab-nav-btn {
+      padding: 10px 16px; font-family: var(--font-head);
+      font-weight: 700; font-size: .84rem;
+      color: var(--muted); cursor: pointer;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      transition: color var(--transition), border-color var(--transition);
+    }
+    .tab-nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    /* ══════════════════════════════════════════════
+       UTILITIES
+    ══════════════════════════════════════════════ */
+    .mt     { margin-top: var(--gap); }
+    .mt-sm  { margin-top: 12px; }
+    .mb     { margin-bottom: var(--gap); }
+    .flex   { display: flex; }
+    .items-center { align-items: center; }
+    .gap-sm { gap: 8px; }
+    .gap    { gap: var(--gap); }
+    .text-center { text-align: center; }
+    .text-muted  { color: var(--muted); }
+    .text-sm     { font-size: .84rem; }
+    .text-xs     { font-size: .74rem; }
+    .fw-bold     { font-weight: 700; }
+    .color-accent  { color: var(--accent); }
+    .color-accent2 { color: var(--accent2); }
+    .color-green   { color: var(--green); }
+    .color-red     { color: var(--red); }
+
+    @media (max-width: 640px) {
+      .hide-mobile { display: none !important; }
+      #app { padding-bottom: 60px; }
+      .hero { padding: 60px 0 40px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
   </style>
 </head>
 <body>
 
-<!-- Stars background -->
-<div id="stars"></div>
-
-<!-- Confetti canvas -->
+<!-- Background -->
+<div id="bg-canvas"></div>
+<!-- Confetti -->
 <canvas id="confetti-canvas"></canvas>
-
-<!-- XP popup -->
+<!-- XP Popup -->
 <div class="xp-pop" id="xp-pop">+50 XP ⭐</div>
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- Assign Student Modal (teacher) -->
+<div class="modal-overlay" id="modal-assign">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('modal-assign')">✕</button>
+    <div class="card-title">➕ Agregar estudiante</div>
+    <p class="text-sm text-muted mb">Ingresa el ID del estudiante para asignarlo a tu grupo.</p>
+    <div class="form-group">
+      <label class="form-label">ID del estudiante (UUID)</label>
+      <input class="form-input" id="assign-student-id" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
+    </div>
+    <button class="btn btn-primary btn-full" id="assign-btn" onclick="doAssignStudent()">Asignar estudiante</button>
+    <div class="msg" id="assign-msg"></div>
+  </div>
+</div>
 
 <div id="app">
+  <!-- ════════════ NAVBAR ════════════ -->
   <nav>
-    <div class="logo"><span>🎮</span> EduGame</div>
-    <div id="nav-user">
-      <div id="user-info">
-        <div id="user-avatar">?</div>
+    <div class="logo" onclick="showPage(STATE.token ? (STATE.profile?.role === 'teacher' ? 'teacher' : STATE.profile?.role === 'admin' ? 'admin' : 'dashboard') : 'landing')">
+      🎮 EduGame
+    </div>
+    <div class="nav-right">
+      <div id="user-chip" onclick="showPage(STATE.profile?.role === 'teacher' ? 'teacher' : STATE.profile?.role === 'admin' ? 'admin' : 'dashboard')">
+        <div class="nav-avatar" id="nav-avatar">?</div>
         <div>
-          <div id="user-name">—</div>
-          <div id="user-xp">0 XP</div>
+          <div id="nav-username">—</div>
+          <div id="nav-xp">0 XP</div>
         </div>
       </div>
-      <button class="btn btn-outline btn-sm" id="btn-leaderboard" onclick="showPage('leaderboard')">🏆 Ranking</button>
+      <span id="nav-role-badge" class="role-badge role-student" style="display:none">Estudiante</span>
+      <button class="btn btn-outline btn-sm hide-mobile" id="btn-lb-nav" onclick="showPage('leaderboard')">🏆 Ranking</button>
       <button class="btn btn-primary btn-sm" id="btn-login-nav" onclick="showPage('auth')">Ingresar</button>
-      <button class="btn btn-danger btn-sm" id="btn-logout" style="display:none" onclick="logout()">Salir</button>
+      <button class="btn btn-ghost btn-sm" id="btn-logout" style="display:none" onclick="logout()">Salir →</button>
     </div>
   </nav>
 
-  <!-- ═══════════════ PAGE: LANDING ═══════════════ -->
+  <!-- ════════════ PAGE: LANDING ════════════ -->
   <div class="page active" id="page-landing">
     <div class="hero">
-      <div class="hero-badge">🚀 Plataforma educativa gamificada</div>
-      <h1>Aprende más rápido <br><span class="hi">jugando en serio</span></h1>
-      <p>Sube de nivel, gana XP y compite con tu escuela. Matemáticas, Física, Inglés y más materias te esperan.</p>
+      <div class="hero-eyebrow">🚀 Plataforma educativa gamificada</div>
+      <h1>Aprende más rápido<br><span class="hi">jugando en serio</span></h1>
+      <p>Sube de nivel, gana XP y compite con tu escuela. 9 materias, IA generando preguntas únicas cada partida.</p>
       <div class="hero-btns">
-        <button class="btn btn-primary" onclick="showPage('auth')">¡Empezar gratis!</button>
-        <button class="btn btn-outline" onclick="showPage('leaderboard')">Ver ranking 🏆</button>
+        <button class="btn btn-primary btn-lg" onclick="showPage('auth')">¡Empezar gratis!</button>
+        <button class="btn btn-outline btn-lg" onclick="showPage('leaderboard')">Ver ranking 🏆</button>
       </div>
     </div>
-    <div class="subjects-float" id="landing-subjects">
-      <!-- filled by JS -->
+
+    <div class="pills-cloud" id="landing-subjects"><!-- JS --></div>
+
+    <div class="features-grid mt">
+      <div class="feature-card">
+        <span class="feature-icon">🤖</span>
+        <div class="feature-title">IA que te reta</div>
+        <div class="feature-desc">Cada partida genera 10 preguntas únicas adaptadas a tu nivel y materia.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">⭐</span>
+        <div class="feature-title">Sistema de XP y niveles</div>
+        <div class="feature-desc">Gana experiencia, sube de nivel y desbloquea insignias por tus logros.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">🏆</span>
+        <div class="feature-title">Ranking global</div>
+        <div class="feature-desc">Compite con estudiantes de tu mismo nivel educativo a nivel nacional.</div>
+      </div>
+      <div class="feature-card">
+        <span class="feature-icon">👩‍🏫</span>
+        <div class="feature-title">Panel para maestros</div>
+        <div class="feature-desc">Monitorea el progreso de tus alumnos por materia, nivel y actividad.</div>
+      </div>
     </div>
   </div>
 
-  <!-- ═══════════════ PAGE: AUTH ═══════════════ -->
+  <!-- ════════════ PAGE: AUTH ════════════ -->
   <div class="page" id="page-auth">
     <div class="auth-wrap">
       <div class="auth-tabs">
@@ -744,15 +968,17 @@
         <div class="card">
           <div class="form-group">
             <label class="form-label">Correo electrónico</label>
-            <input class="form-input" id="login-email" type="email" placeholder="tu@correo.com" />
+            <input class="form-input" id="login-email" type="email" placeholder="tu@correo.com" autocomplete="email" />
           </div>
           <div class="form-group">
             <label class="form-label">Contraseña</label>
-            <input class="form-input" id="login-pass" type="password" placeholder="••••••" />
+            <input class="form-input" id="login-pass" type="password" placeholder="••••••••" autocomplete="current-password"
+              onkeydown="if(event.key==='Enter') doLogin()" />
           </div>
-          <button class="btn btn-primary" style="width:100%" id="login-btn" onclick="doLogin()">Ingresar →</button>
+          <button class="btn btn-primary btn-full" id="login-btn" onclick="doLogin()">Ingresar →</button>
           <div class="msg" id="login-msg"></div>
         </div>
+        <p class="text-center mt-sm text-sm text-muted" style="cursor:pointer" onclick="showPage('landing')">← Volver al inicio</p>
       </div>
 
       <!-- REGISTER -->
@@ -760,123 +986,130 @@
         <div class="card">
           <div class="form-group">
             <label class="form-label">Correo electrónico</label>
-            <input class="form-input" id="reg-email" type="email" placeholder="tu@correo.com" />
+            <input class="form-input" id="reg-email" type="email" placeholder="tu@correo.com" autocomplete="email" />
           </div>
           <div class="form-group">
-            <label class="form-label">Contraseña (mín. 6 caracteres)</label>
-            <input class="form-input" id="reg-pass" type="password" placeholder="••••••" />
+            <label class="form-label">Contraseña (mín. 8 caracteres)</label>
+            <input class="form-input" id="reg-pass" type="password" placeholder="••••••••"
+              autocomplete="new-password" oninput="updatePwStrength(this.value)" />
+            <div class="pw-bar mt-sm"><div class="pw-fill" id="pw-fill"></div></div>
           </div>
           <div class="two-col">
             <div class="form-group">
               <label class="form-label">Nombre de usuario</label>
-              <input class="form-input" id="reg-user" type="text" placeholder="Ejemplo: Luis_17" />
+              <input class="form-input" id="reg-user" type="text" placeholder="Usuario_17"
+                maxlength="20" autocomplete="username" />
             </div>
             <div class="form-group">
               <label class="form-label">Edad</label>
               <input class="form-input" id="reg-age" type="number" min="6" max="100" placeholder="15" />
             </div>
           </div>
-          <button class="btn btn-primary" style="width:100%" id="reg-btn" onclick="doRegister()">Crear cuenta →</button>
+          <button class="btn btn-primary btn-full" id="reg-btn" onclick="doRegister()">Crear cuenta →</button>
           <div class="msg" id="reg-msg"></div>
         </div>
+        <p class="text-center mt-sm text-sm text-muted" style="cursor:pointer" onclick="showPage('landing')">← Volver al inicio</p>
       </div>
-
-      <p class="text-center mt" style="color:var(--muted);font-size:.85rem;cursor:pointer" onclick="showPage('landing')">← Volver al inicio</p>
     </div>
   </div>
 
-  <!-- ═══════════════ PAGE: DASHBOARD ═══════════════ -->
+  <!-- ════════════ PAGE: DASHBOARD (STUDENT) ════════════ -->
   <div class="page" id="page-dashboard">
     <div class="dash-header">
       <div>
-        <div style="color:var(--muted);font-size:.85rem;margin-bottom:4px">Bienvenido de vuelta</div>
+        <div class="dash-sub">Bienvenido de vuelta</div>
         <div class="dash-greeting">¡Hola, <em id="dash-name">jugador</em>! 👋</div>
       </div>
-      <div style="text-align:right">
-        <div style="font-size:.78rem;color:var(--muted)">Nivel global</div>
-        <div style="font-family:var(--font-head);font-size:1.6rem;font-weight:900;color:var(--accent2)" id="dash-level">1</div>
-      </div>
+      <button class="btn btn-outline btn-sm" onclick="showPage('leaderboard')">🏆 Ranking</button>
     </div>
 
-    <div class="level-bar-wrap">
-      <div class="level-bar-label">
-        <span id="lb-xp-text">0 XP</span>
-        <span id="lb-next-text">Siguiente nivel: 100 XP</span>
+    <!-- XP bar -->
+    <div class="xp-bar-wrap">
+      <div class="xp-bar-meta">
+        <span id="xp-text">0 XP — Nivel 1</span>
+        <span id="xp-next">Siguiente: 100 XP</span>
       </div>
-      <div class="level-bar"><div class="level-bar-fill" id="xp-bar" style="width:0%"></div></div>
+      <div class="xp-bar"><div class="xp-bar-fill" id="xp-fill" style="width:0%"></div></div>
     </div>
 
-    <div class="stats-row" id="stats-row">
-      <div class="stat-card" style="--accent-c:#7c6af744">
+    <!-- Stats -->
+    <div class="stats-grid mb">
+      <div class="stat-card" style="--accent-c:rgba(124,106,247,.08)">
+        <div class="stat-icon">⚡</div>
         <div class="stat-num" id="stat-xp">0</div>
         <div class="stat-label">XP Total</div>
       </div>
-      <div class="stat-card" style="--accent-c:#f7c06a22">
+      <div class="stat-card" style="--accent-c:rgba(247,192,106,.06)">
+        <div class="stat-icon">🎯</div>
         <div class="stat-num" style="color:var(--accent2)" id="stat-level">1</div>
         <div class="stat-label">Nivel</div>
       </div>
-      <div class="stat-card" style="--accent-c:#4ade8022">
+      <div class="stat-card" style="--accent-c:rgba(74,222,128,.06)">
+        <div class="stat-icon">🎮</div>
         <div class="stat-num" style="color:var(--green)" id="stat-games">0</div>
         <div class="stat-label">Partidas</div>
       </div>
-      <div class="stat-card" style="--accent-c:#f8717122">
-        <div class="stat-num" style="color:var(--red)" id="stat-best">0</div>
+      <div class="stat-card" style="--accent-c:rgba(56,189,248,.06)">
+        <div class="stat-icon">🏅</div>
+        <div class="stat-num" style="color:var(--cyan)" id="stat-best">0</div>
         <div class="stat-label">Mejor score</div>
       </div>
     </div>
 
-    <div class="section-title mt">Elige una materia</div>
-    <div class="subject-grid" id="subject-grid">
-      <!-- loaded by JS -->
-    </div>
+    <div class="section-eyebrow">Elige una materia</div>
+    <div class="subjects-grid" id="subject-grid"><!-- JS --></div>
   </div>
 
-  <!-- ═══════════════ PAGE: GAME ═══════════════ -->
+  <!-- ════════════ PAGE: GAME ════════════ -->
   <div class="page" id="page-game">
     <div class="game-header">
-      <button class="btn btn-outline btn-sm" onclick="showPage('dashboard')">← Volver</button>
+      <button class="btn btn-outline btn-sm" onclick="confirmLeaveGame()">← Salir</button>
       <div class="game-title" id="game-title">Matemáticas</div>
-      <div class="score-display">
-        <div class="score-badge">⭐ <span class="val" id="live-score">0</span></div>
-        <div class="score-badge">❓ <span class="val" id="live-q">1</span>/10</div>
+      <div class="score-pills">
+        <div class="score-pill">⭐ <span class="val" id="live-score">0</span></div>
+        <div class="score-pill">❓ <span class="val" id="live-q">1</span>/10</div>
       </div>
     </div>
 
-    <!-- question -->
+    <!-- Loading -->
+    <div class="card loading-box" id="game-loading">
+      <div class="spinner-lg spinner"></div>
+      Generando preguntas con IA…
+    </div>
+
+    <!-- Question card -->
     <div class="q-card" id="q-card" style="display:none">
-      <div class="q-num" id="q-num">Pregunta 1 de 10</div>
+      <div class="q-meta">
+        <span id="q-num">Pregunta 1 de 10</span>
+        <span id="q-time">⏱ 20s</span>
+      </div>
       <div class="timer-bar"><div class="timer-fill" id="timer-fill"></div></div>
       <div class="q-text" id="q-text">Cargando pregunta…</div>
       <div class="options-grid" id="options-grid"></div>
       <div class="q-feedback" id="q-feedback"></div>
     </div>
 
-    <!-- loading state -->
-    <div class="card text-center" id="game-loading" style="padding:60px">
-      <div class="spinner" style="width:40px;height:40px;margin:0 auto 20px"></div>
-      <div style="color:var(--muted);font-weight:600">Generando preguntas con IA…</div>
-    </div>
-
-    <!-- result -->
+    <!-- Result -->
     <div class="card result-card" id="game-result" style="display:none">
       <span class="result-emoji" id="result-emoji">🏆</span>
       <div class="result-score" id="result-score">850</div>
-      <div class="result-label" id="result-label">puntos</div>
-      <div style="color:var(--accent2);font-weight:700;margin-bottom:20px" id="result-xp">+85 XP ganado</div>
+      <div class="result-label">puntos obtenidos</div>
+      <div class="result-xp" id="result-xp"></div>
+      <div class="result-badges" id="result-badges"></div>
       <div class="result-actions">
-        <button class="btn btn-primary" onclick="startGame(currentSubject)">Jugar de nuevo 🎮</button>
+        <button class="btn btn-primary" onclick="startGame(currentSubject,currentSubjectName,currentSubjectIcon)">Jugar de nuevo 🎮</button>
         <button class="btn btn-outline" onclick="showPage('dashboard')">Ver materias</button>
-        <button class="btn btn-gold" onclick="showPage('leaderboard')">Ver ranking 🏆</button>
+        <button class="btn btn-gold"    onclick="showPage('leaderboard')">Ranking 🏆</button>
       </div>
     </div>
   </div>
 
-  <!-- ═══════════════ PAGE: LEADERBOARD ═══════════════ -->
+  <!-- ════════════ PAGE: LEADERBOARD ════════════ -->
   <div class="page" id="page-leaderboard">
     <div class="dash-header">
       <div>
         <div class="dash-greeting">🏆 Ranking Global</div>
-        <div style="color:var(--muted);font-size:.9rem;margin-top:4px">Los mejores jugadores de EduGame</div>
+        <div class="dash-sub">Los mejores jugadores de EduGame</div>
       </div>
       <button class="btn btn-outline btn-sm" onclick="showPage(STATE.token ? 'dashboard' : 'landing')">← Volver</button>
     </div>
@@ -896,10 +1129,148 @@
 
     <div class="card">
       <div id="lb-body">
-        <div class="text-center" style="padding:40px;color:var(--muted)">
-          <div class="spinner" style="width:32px;height:32px;margin:0 auto 16px"></div>
-          Cargando ranking…
+        <div class="loading-box"><div class="spinner-lg spinner"></div>Cargando ranking…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ PAGE: TEACHER PANEL ════════════ -->
+  <div class="page" id="page-teacher">
+    <div class="teacher-header">
+      <div>
+        <div class="dash-sub">Panel de profesor</div>
+        <div class="panel-title">👩‍🏫 Mis estudiantes</div>
+      </div>
+      <div class="flex gap-sm">
+        <button class="btn btn-green btn-sm" onclick="openModal('modal-assign')">➕ Agregar alumno</button>
+        <button class="btn btn-outline btn-sm" onclick="loadTeacherData()">↻ Actualizar</button>
+      </div>
+    </div>
+
+    <div class="tab-nav" id="teacher-tabs">
+      <div class="tab-nav-btn active" onclick="switchTeacherTab('students',this)">👥 Alumnos</div>
+      <div class="tab-nav-btn" onclick="switchTeacherTab('ranking',this)">🏆 Ranking de clase</div>
+    </div>
+
+    <!-- Students tab -->
+    <div id="teacher-tab-students">
+      <div class="lb-filters mb">
+        <select class="lb-select" id="t-subject-filter" onchange="loadTeacherData()">
+          <option value="">Todas las materias</option>
+        </select>
+        <select class="lb-select" id="t-level-filter" onchange="loadTeacherData()">
+          <option value="">Todos los niveles</option>
+          <option value="primaria">Primaria</option>
+          <option value="secundaria">Secundaria</option>
+          <option value="preparatoria">Preparatoria</option>
+          <option value="universidad">Universidad</option>
+        </select>
+      </div>
+      <div class="card">
+        <div id="teacher-students-body">
+          <div class="loading-box"><div class="spinner-lg spinner"></div>Cargando alumnos…</div>
         </div>
+      </div>
+    </div>
+
+    <!-- Ranking tab -->
+    <div id="teacher-tab-ranking" style="display:none">
+      <div class="card">
+        <div id="teacher-ranking-body">
+          <div class="loading-box"><div class="spinner-lg spinner"></div>Cargando ranking de clase…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════ PAGE: ADMIN PANEL ════════════ -->
+  <div class="page" id="page-admin">
+    <div class="teacher-header">
+      <div>
+        <div class="dash-sub">Panel de administrador</div>
+        <div class="panel-title">⚙️ Administración</div>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="loadAdminData()">↻ Actualizar</button>
+    </div>
+
+    <div class="admin-tabs">
+      <div class="admin-tab active" onclick="switchAdminTab('overview',this)">📊 Resumen</div>
+      <div class="admin-tab" onclick="switchAdminTab('users',this)">👥 Usuarios</div>
+      <div class="admin-tab" onclick="switchAdminTab('assign',this)">🔗 Asignaciones</div>
+      <div class="admin-tab" onclick="switchAdminTab('promote',this)">⬆️ Roles</div>
+    </div>
+
+    <!-- Overview -->
+    <div class="admin-section active" id="admin-overview">
+      <div id="admin-stats-body">
+        <div class="loading-box"><div class="spinner-lg spinner"></div>Cargando estadísticas…</div>
+      </div>
+    </div>
+
+    <!-- Users -->
+    <div class="admin-section" id="admin-users">
+      <div class="lb-filters mb">
+        <select class="lb-select" id="admin-role-filter" onchange="loadAdminUsers()">
+          <option value="">Todos los roles</option>
+          <option value="student">Estudiantes</option>
+          <option value="teacher">Profesores</option>
+          <option value="admin">Admins</option>
+        </select>
+        <select class="lb-select" id="admin-edu-filter" onchange="loadAdminUsers()">
+          <option value="">Todos los niveles</option>
+          <option value="primaria">Primaria</option>
+          <option value="secundaria">Secundaria</option>
+          <option value="preparatoria">Preparatoria</option>
+          <option value="universidad">Universidad</option>
+        </select>
+      </div>
+      <div class="card">
+        <div id="admin-users-body">
+          <div class="loading-box"><div class="spinner-lg spinner"></div>Cargando usuarios…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Assign teacher-student -->
+    <div class="admin-section" id="admin-assign">
+      <div class="card" style="max-width:480px">
+        <div class="card-title">🔗 Asignar alumno a profesor</div>
+        <div class="form-group">
+          <label class="form-label">ID del profesor (UUID)</label>
+          <input class="form-input" id="a-teacher-id" placeholder="UUID del profesor" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">ID del alumno (UUID)</label>
+          <input class="form-input" id="a-student-id" placeholder="UUID del alumno" />
+        </div>
+        <button class="btn btn-primary" onclick="doAdminAssign()">Asignar →</button>
+        <div class="msg" id="assign-admin-msg"></div>
+      </div>
+    </div>
+
+    <!-- Promote -->
+    <div class="admin-section" id="admin-promote">
+      <div class="card" style="max-width:480px">
+        <div class="card-title">⬆️ Cambiar rol de usuario</div>
+        <div class="form-group">
+          <label class="form-label">ID del usuario (UUID)</label>
+          <input class="form-input" id="p-user-id" placeholder="UUID del usuario" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nuevo rol</label>
+          <select class="form-input" id="p-role">
+            <option value="student">student</option>
+            <option value="teacher">teacher</option>
+            <option value="school_admin">school_admin</option>
+            <option value="admin">admin</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Clave de override</label>
+          <input class="form-input" id="p-override" type="password" placeholder="••••••••" />
+        </div>
+        <button class="btn btn-danger" onclick="doAdminPromote()">Cambiar rol</button>
+        <div class="msg" id="promote-msg"></div>
       </div>
     </div>
   </div>
@@ -907,77 +1278,165 @@
 </div><!-- /app -->
 
 <script>
-/* ═══════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    CONFIG
-═══════════════════════════════════════════════════════════ */
-const API = window.location.hostname === 'localhost'
-  ? 'http://localhost:3000'
-  : ''; // same origin in production (Render serves both)
+══════════════════════════════════════════════════════════ */
+const API = window.location.hostname === 'localhost' ? 'http://localhost:3000' : '';
 
-/* ═══════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    STATE
-═══════════════════════════════════════════════════════════ */
+══════════════════════════════════════════════════════════ */
 const STATE = {
-  token: localStorage.getItem('eg_token') || null,
-  profile: JSON.parse(localStorage.getItem('eg_profile') || 'null'),
+  token:        localStorage.getItem('eg_token')   || null,
+  refreshToken: localStorage.getItem('eg_refresh') || null,
+  profile:      (() => { try { return JSON.parse(localStorage.getItem('eg_profile') || 'null'); } catch { return null; } })(),
   subjects: [],
-  scores: []
+  scores:   [],
 };
 
-/* ═══════════════════════════════════════════════════════════
-   STARS BACKGROUND
-═══════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════
+   STARS
+══════════════════════════════════════════════════════════ */
 (function(){
-  const c = document.getElementById('stars');
-  for(let i=0;i<90;i++){
-    const s=document.createElement('div');
-    s.className='star';
-    const size = Math.random()*2+1;
-    s.style.cssText=`
-      width:${size}px;height:${size}px;
-      left:${Math.random()*100}%;
-      top:${Math.random()*100}%;
-      --d:${2+Math.random()*4}s;
-      --delay:${Math.random()*4}s;
-    `;
+  const c = document.getElementById('bg-canvas');
+  for (let i = 0; i < 80; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const sz = Math.random() * 2 + .5;
+    s.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*5}s;--delay:${Math.random()*5}s`;
     c.appendChild(s);
   }
 })();
 
-/* ═══════════════════════════════════════════════════════════
-   PAGE NAVIGATION
-═══════════════════════════════════════════════════════════ */
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  if (id === 'leaderboard') { populateLbSubjectFilter(); loadLeaderboard(); }
-  if (id === 'dashboard')   loadDashboard();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+/* ══════════════════════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════════════════════ */
+function showToast(text, duration = 2800) {
+  const t = document.getElementById('toast');
+  t.textContent = text;
+  t.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => t.classList.remove('show'), duration);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   AUTH TAB
-═══════════════════════════════════════════════════════════ */
-function switchTab(t) {
-  document.getElementById('form-login').style.display    = t==='login'    ? 'block' : 'none';
-  document.getElementById('form-register').style.display = t==='register' ? 'block' : 'none';
-  document.getElementById('tab-login').classList.toggle('active', t==='login');
-  document.getElementById('tab-register').classList.toggle('active', t==='register');
-}
+/* ══════════════════════════════════════════════════════════
+   MODAL
+══════════════════════════════════════════════════════════ */
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-/* ═══════════════════════════════════════════════════════════
-   API HELPER
-═══════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════
+   API HELPER — with auto refresh
+══════════════════════════════════════════════════════════ */
 async function api(method, path, body, token) {
   const headers = { 'Content-Type': 'application/json' };
-  if (token) headers['Authorization'] = 'Bearer '+token;
-  const r = await fetch(API+path, { method, headers, body: body ? JSON.stringify(body) : undefined });
-  return r.json();
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  const res = await fetch(API + path, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+
+  // Auto-refresh on 401
+  if (res.status === 401 && STATE.refreshToken) {
+    try {
+      const rd = await fetch(API + '/refresh', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: STATE.refreshToken }),
+      }).then(r => r.json());
+
+      if (rd.token) {
+        STATE.token = rd.token;
+        STATE.refreshToken = rd.refresh_token;
+        localStorage.setItem('eg_token',   rd.token);
+        localStorage.setItem('eg_refresh', rd.refresh_token);
+        // Retry original request
+        headers['Authorization'] = 'Bearer ' + rd.token;
+        return fetch(API + path, { method, headers, body: body ? JSON.stringify(body) : undefined }).then(r => r.json());
+      }
+    } catch (_) { /* fall through to logout */ }
+    logout();
+    return {};
+  }
+
+  return res.json();
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
+   PAGE NAVIGATION
+══════════════════════════════════════════════════════════ */
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const el = document.getElementById('page-' + id);
+  if (!el) return;
+  el.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  if (id === 'leaderboard') { populateLbFilters(); loadLeaderboard(); }
+  if (id === 'dashboard')   loadDashboard();
+  if (id === 'teacher')     loadTeacherData();
+  if (id === 'admin')       loadAdminData();
+}
+
+/* ══════════════════════════════════════════════════════════
+   NAV
+══════════════════════════════════════════════════════════ */
+function updateNav() {
+  const chip    = document.getElementById('user-chip');
+  const loginB  = document.getElementById('btn-login-nav');
+  const logoutB = document.getElementById('btn-logout');
+  const badge   = document.getElementById('nav-role-badge');
+
+  if (STATE.token && STATE.profile) {
+    const p = STATE.profile;
+    chip.style.display    = 'flex';
+    loginB.style.display  = 'none';
+    logoutB.style.display = 'inline-flex';
+    badge.style.display   = 'inline-flex';
+
+    document.getElementById('nav-avatar').textContent    = (p.username || 'U')[0].toUpperCase();
+    document.getElementById('nav-avatar').style.background = p.avatar_color || '#7c6af7';
+    document.getElementById('nav-username').textContent  = p.username;
+    document.getElementById('nav-xp').textContent        = `${p.total_xp || 0} XP`;
+
+    const roleLabels = { student:'Estudiante', teacher:'Profesor', admin:'Admin', school_admin:'Escuela' };
+    badge.textContent = roleLabels[p.role] || p.role;
+    badge.className   = `role-badge role-${p.role}`;
+  } else {
+    chip.style.display    = 'none';
+    loginB.style.display  = 'inline-flex';
+    logoutB.style.display = 'none';
+    badge.style.display   = 'none';
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   AUTH TABS
+══════════════════════════════════════════════════════════ */
+function switchTab(t) {
+  document.getElementById('form-login').style.display    = t === 'login'    ? 'block' : 'none';
+  document.getElementById('form-register').style.display = t === 'register' ? 'block' : 'none';
+  document.getElementById('tab-login').classList.toggle('active',    t === 'login');
+  document.getElementById('tab-register').classList.toggle('active', t === 'register');
+}
+
+function updatePwStrength(pw) {
+  let score = 0;
+  if (pw.length >= 8)  score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^a-zA-Z0-9]/.test(pw)) score++;
+  const fill = document.getElementById('pw-fill');
+  const colors = ['', '#f87171', '#f7c06a', '#4ade80', '#7c6af7'];
+  const widths  = ['0%', '25%', '50%', '75%', '100%'];
+  fill.style.width      = widths[score];
+  fill.style.background = colors[score];
+}
+
+/* ══════════════════════════════════════════════════════════
    REGISTER
-═══════════════════════════════════════════════════════════ */
+══════════════════════════════════════════════════════════ */
 async function doRegister() {
   const email    = document.getElementById('reg-email').value.trim();
   const password = document.getElementById('reg-pass').value;
@@ -988,23 +1447,24 @@ async function doRegister() {
 
   setMsg(msgEl, '', '');
   btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span>';
+  btn.innerHTML = '<span class="spinner"></span> Creando cuenta…';
 
   try {
     const d = await api('POST', '/register', { email, password, username, age });
-    if (d.error) { setMsg(msgEl, d.error, 'err'); }
-    else {
-      setMsg(msgEl, `¡Cuenta creada! Nivel: ${d.education_level}. Ahora ingresa.`, 'ok');
-      setTimeout(() => switchTab('login'), 1800);
+    if (d.error) {
+      setMsg(msgEl, d.error, 'err');
+    } else {
+      setMsg(msgEl, `✅ ¡Cuenta creada! Nivel: ${d.education_level}. Ahora ingresa.`, 'ok');
+      setTimeout(() => switchTab('login'), 2000);
     }
-  } catch(e) { setMsg(msgEl, 'Error de red. Intenta de nuevo.', 'err'); }
+  } catch { setMsg(msgEl, '⚠️ Error de red. Intenta de nuevo.', 'err'); }
   btn.disabled = false;
   btn.innerHTML = 'Crear cuenta →';
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    LOGIN
-═══════════════════════════════════════════════════════════ */
+══════════════════════════════════════════════════════════ */
 async function doLogin() {
   const email    = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-pass').value;
@@ -1013,110 +1473,103 @@ async function doLogin() {
 
   setMsg(msgEl, '', '');
   btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span>';
+  btn.innerHTML = '<span class="spinner"></span> Ingresando…';
 
   try {
     const d = await api('POST', '/login', { email, password });
-    if (d.error) { setMsg(msgEl, d.error, 'err'); }
-    else {
-      STATE.token   = d.token;
-      STATE.profile = d.profile;
+    if (d.error) {
+      setMsg(msgEl, d.error, 'err');
+    } else {
+      STATE.token        = d.token;
+      STATE.refreshToken = d.refresh_token;
+      STATE.profile      = d.user;
       localStorage.setItem('eg_token',   d.token);
-      localStorage.setItem('eg_profile', JSON.stringify(d.profile));
-      updateNavUser();
-      showPage('dashboard');
+      localStorage.setItem('eg_refresh', d.refresh_token || '');
+      localStorage.setItem('eg_profile', JSON.stringify(d.user));
+      updateNav();
+
+      // Role-based redirect
+      const role = d.user.role;
+      if (role === 'admin')   showPage('admin');
+      else if (role === 'teacher' || role === 'school_admin') showPage('teacher');
+      else showPage('dashboard');
     }
-  } catch(e) { setMsg(msgEl, 'Error de red. Intenta de nuevo.', 'err'); }
+  } catch { setMsg(msgEl, '⚠️ Error de red. Intenta de nuevo.', 'err'); }
   btn.disabled = false;
   btn.innerHTML = 'Ingresar →';
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    LOGOUT
-═══════════════════════════════════════════════════════════ */
+══════════════════════════════════════════════════════════ */
 function logout() {
-  STATE.token = null; STATE.profile = null;
-  localStorage.removeItem('eg_token');
-  localStorage.removeItem('eg_profile');
-  updateNavUser();
+  STATE.token = STATE.refreshToken = STATE.profile = null;
+  STATE.subjects = []; STATE.scores = [];
+  ['eg_token', 'eg_refresh', 'eg_profile'].forEach(k => localStorage.removeItem(k));
+  updateNav();
   showPage('landing');
 }
 
-/* ═══════════════════════════════════════════════════════════
-   NAV USER
-═══════════════════════════════════════════════════════════ */
-function updateNavUser() {
-  const info   = document.getElementById('user-info');
-  const loginB = document.getElementById('btn-login-nav');
-  const logoutB= document.getElementById('btn-logout');
-
-  if (STATE.token && STATE.profile) {
-    const p = STATE.profile;
-    info.style.display   = 'flex';
-    loginB.style.display = 'none';
-    logoutB.style.display= 'inline-flex';
-    document.getElementById('user-avatar').textContent = (p.username||'U')[0].toUpperCase();
-    document.getElementById('user-name').textContent   = p.username;
-    document.getElementById('user-xp').textContent     = `${p.total_xp||0} XP`;
-  } else {
-    info.style.display   = 'none';
-    loginB.style.display = 'inline-flex';
-    logoutB.style.display= 'none';
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════
-   DASHBOARD
-═══════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════
+   STUDENT DASHBOARD
+══════════════════════════════════════════════════════════ */
 async function loadDashboard() {
   if (!STATE.token) { showPage('auth'); return; }
 
   document.getElementById('dash-name').textContent = STATE.profile?.username || 'jugador';
 
-  // Load subjects
-  const sd = await api('GET', '/subjects');
-  STATE.subjects = sd.subjects || [];
-  renderLandingSubjects();
+  // Subjects
+  if (!STATE.subjects.length) {
+    const sd = await api('GET', '/subjects');
+    STATE.subjects = sd.subjects || [];
+    renderLandingSubjects();
+  }
 
-  // Load profile with scores
+  // Profile with scores
   const pd = await api('GET', '/me', null, STATE.token);
+  if (pd.error) { logout(); return; }
+
   STATE.scores = pd.scores || [];
 
-  // aggregate stats
-  const totalXP    = STATE.scores.reduce((s, sc) => s+sc.total_xp,   0);
-  const totalGames = STATE.scores.reduce((s, sc) => s+sc.games_played, 0);
+  const totalXP    = STATE.scores.reduce((s, sc) => s + sc.total_xp, 0);
+  const totalGames = STATE.scores.reduce((s, sc) => s + sc.games_played, 0);
   const bestScore  = STATE.scores.reduce((m, sc) => Math.max(m, sc.best_score), 0);
   const level      = Math.floor(totalXP / 100) + 1;
   const xpInLevel  = totalXP % 100;
 
-  document.getElementById('stat-xp').textContent    = totalXP;
+  document.getElementById('stat-xp').textContent    = totalXP.toLocaleString();
   document.getElementById('stat-level').textContent = level;
   document.getElementById('stat-games').textContent = totalGames;
-  document.getElementById('stat-best').textContent  = bestScore;
-  document.getElementById('dash-level').textContent = level;
-  document.getElementById('lb-xp-text').textContent    = `${totalXP} XP`;
-  document.getElementById('lb-next-text').textContent   = `Siguiente nivel: ${level*100} XP`;
-  document.getElementById('xp-bar').style.width          = `${xpInLevel}%`;
+  document.getElementById('stat-best').textContent  = bestScore.toLocaleString();
+  document.getElementById('xp-text').textContent    = `${totalXP.toLocaleString()} XP — Nivel ${level}`;
+  document.getElementById('xp-next').textContent    = `Siguiente: ${(level * 100).toLocaleString()} XP`;
+  document.getElementById('xp-fill').style.width    = `${xpInLevel}%`;
 
-  // Update nav
   STATE.profile = { ...STATE.profile, total_xp: totalXP };
-  document.getElementById('user-xp').textContent = `${totalXP} XP`;
+  document.getElementById('nav-xp').textContent = `${totalXP} XP`;
 
   renderSubjectGrid();
 }
 
 function renderSubjectGrid() {
   const grid = document.getElementById('subject-grid');
+  if (!STATE.subjects.length) {
+    grid.innerHTML = `<div class="empty-state"><div class="icon">📚</div><p>No hay materias disponibles.</p></div>`;
+    return;
+  }
   grid.innerHTML = STATE.subjects.map(sub => {
     const sc = STATE.scores.find(s => s.subjects?.slug === sub.slug);
     return `
-      <div class="subj-card" onclick="startGame('${sub.slug}','${sub.name}','${sub.icon}')">
-        ${sc ? `<div class="subj-level-badge">Lv ${sc.current_level||1}</div>` : ''}
-        <span class="subj-icon">${sub.icon}</span>
-        <div class="subj-name">${sub.name}</div>
-        <div class="subj-desc">${sub.description||''}</div>
-        <div class="subj-score">
-          ⭐ ${sc ? sc.best_score : 0} mejor &nbsp;·&nbsp; 🎮 ${sc ? sc.games_played : 0} jugadas
+      <div class="subj-card" onclick="startGame('${esc(sub.slug)}','${esc(sub.name)}','${esc(sub.icon || '📚')}')"
+           role="button" tabindex="0"
+           onkeydown="if(event.key==='Enter') startGame('${esc(sub.slug)}','${esc(sub.name)}','${esc(sub.icon || '📚')}')">
+        ${sc ? `<div class="subj-lv-badge">Lv ${sc.current_level || 1}</div>` : ''}
+        <span class="subj-icon">${sub.icon || '📚'}</span>
+        <div class="subj-name">${esc(sub.name)}</div>
+        <div class="subj-desc">${esc(sub.description || '')}</div>
+        <div class="subj-meta">
+          <span>⭐ ${sc ? sc.best_score.toLocaleString() : '0'}</span>
+          <span>🎮 ${sc ? sc.games_played : '0'} jugadas</span>
         </div>
       </div>`;
   }).join('');
@@ -1126,20 +1579,23 @@ function renderLandingSubjects() {
   const c = document.getElementById('landing-subjects');
   if (!STATE.subjects.length) return;
   c.innerHTML = STATE.subjects.map(s =>
-    `<div class="subject-chip" onclick="showPage('auth')">${s.icon} ${s.name}</div>`
+    `<div class="pill" onclick="showPage('auth')">${s.icon} ${esc(s.name)}</div>`
   ).join('');
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    GAME ENGINE
-═══════════════════════════════════════════════════════════ */
-let currentSubject = null;
-let currentSubjectName = '';
-let currentSubjectIcon = '';
-let questions = [];
-let qIndex    = 0;
-let liveScore = 0;
-let timerInterval = null;
+══════════════════════════════════════════════════════════ */
+let currentSubject = null, currentSubjectName = '', currentSubjectIcon = '';
+let questions = [], qIndex = 0, liveScore = 0, timerInterval = null;
+
+function confirmLeaveGame() {
+  if (qIndex > 0 && qIndex < questions.length) {
+    if (!confirm('¿Seguro que quieres salir? Perderás tu progreso en esta partida.')) return;
+  }
+  clearInterval(timerInterval);
+  showPage('dashboard');
+}
 
 async function startGame(slug, name, icon) {
   if (!STATE.token) { showPage('auth'); return; }
@@ -1155,8 +1611,8 @@ async function startGame(slug, name, icon) {
   document.getElementById('q-card').style.display        = 'none';
   document.getElementById('game-result').style.display   = 'none';
   document.getElementById('game-loading').style.display  = 'block';
+  clearInterval(timerInterval);
 
-  // Ask the Claude API for questions
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -1167,17 +1623,17 @@ async function startGame(slug, name, icon) {
         system: `Eres un generador de preguntas para un juego educativo en español.
 Genera exactamente 10 preguntas de opción múltiple sobre la materia indicada.
 Responde SOLO con un array JSON válido, sin explicaciones ni backticks.
-Formato exacto:
-[{"q":"pregunta","options":["A","B","C","D"],"answer":0,"explanation":"explicacion breve"}]
-answer es el índice (0-3) de la opción correcta.
-Las preguntas deben ser variadas, claras y apropiadas para estudiantes de educación básica a universitaria.`,
+Formato exacto: [{"q":"pregunta","options":["A","B","C","D"],"answer":0,"explanation":"explicacion breve"}]
+"answer" es el índice (0-3) de la opción correcta.
+Las preguntas deben ser variadas, claras y apropiadas para estudiantes.`,
         messages: [{ role: 'user', content: `Genera 10 preguntas de ${currentSubjectName}.` }]
       })
     });
     const data = await res.json();
     const raw  = data.content?.[0]?.text || '[]';
     questions  = JSON.parse(raw.replace(/```json|```/g, '').trim());
-  } catch(e) {
+    if (!Array.isArray(questions) || !questions.length) throw new Error('no questions');
+  } catch {
     questions = fallbackQuestions(currentSubject);
   }
 
@@ -1191,192 +1647,522 @@ function showQuestion() {
   const q = questions[qIndex];
   clearInterval(timerInterval);
 
-  document.getElementById('q-num').textContent  = `Pregunta ${qIndex+1} de ${questions.length}`;
+  document.getElementById('q-num').textContent = `Pregunta ${qIndex + 1} de ${questions.length}`;
   document.getElementById('q-text').textContent = q.q;
-  document.getElementById('live-q').textContent = qIndex+1;
-  document.getElementById('q-feedback').classList.remove('show','ok','err');
-  document.getElementById('q-feedback').textContent = '';
+  document.getElementById('live-q').textContent = qIndex + 1;
+  document.getElementById('q-feedback').classList.remove('show', 'ok', 'err');
 
-  // Timer
   let timeLeft = 20;
   const fill = document.getElementById('timer-fill');
+  const timeEl = document.getElementById('q-time');
   fill.style.width = '100%';
   fill.classList.remove('warn');
+
   timerInterval = setInterval(() => {
     timeLeft--;
-    const pct = (timeLeft/20)*100;
-    fill.style.width = pct+'%';
-    if(timeLeft <= 6) fill.classList.add('warn');
-    if(timeLeft <= 0) { clearInterval(timerInterval); handleAnswer(-1); }
+    fill.style.width = (timeLeft / 20 * 100) + '%';
+    timeEl.textContent = `⏱ ${timeLeft}s`;
+    if (timeLeft <= 5) fill.classList.add('warn');
+    if (timeLeft <= 0) { clearInterval(timerInterval); handleAnswer(-1); }
   }, 1000);
 
-  // Options
   const grid = document.getElementById('options-grid');
-  const letters = ['A','B','C','D'];
-  grid.innerHTML = q.options.map((opt,i) => `
+  const letters = ['A', 'B', 'C', 'D'];
+  grid.innerHTML = (q.options || []).map((opt, i) => `
     <button class="option-btn" onclick="handleAnswer(${i})">
       <span class="opt-letter">${letters[i]}</span>
-      ${opt}
-    </button>
-  `).join('');
+      ${esc(opt)}
+    </button>`).join('');
 }
 
 function handleAnswer(idx) {
   clearInterval(timerInterval);
-  const q = questions[qIndex];
+  const q    = questions[qIndex];
   const btns = document.querySelectorAll('.option-btn');
   btns.forEach(b => b.disabled = true);
 
   const fb = document.getElementById('q-feedback');
   if (idx === q.answer) {
-    btns[idx]?.classList.add('correct');
-    const pts = 100 + Math.floor(Math.random()*50);
+    if (btns[idx]) btns[idx].classList.add('correct');
+    const pts = 100 + Math.floor(Math.random() * 51);
     liveScore += pts;
     document.getElementById('live-score').textContent = liveScore;
-    fb.innerHTML = `✅ ¡Correcto! ${q.explanation||''}`;
-    fb.classList.add('show','ok');
+    fb.innerHTML = `✅ ¡Correcto! ${esc(q.explanation || '')}`;
+    fb.classList.add('show', 'ok');
   } else {
-    if(idx >= 0) btns[idx]?.classList.add('wrong');
-    if(q.answer >= 0 && q.answer < btns.length) btns[q.answer]?.classList.add('correct');
-    fb.innerHTML = `❌ Incorrecto. ${q.explanation||''}`;
-    fb.classList.add('show','err');
+    if (idx >= 0 && btns[idx]) btns[idx].classList.add('wrong');
+    if (btns[q.answer]) btns[q.answer].classList.add('correct');
+    fb.innerHTML = `❌ Respuesta: <strong>${['A','B','C','D'][q.answer]}</strong>. ${esc(q.explanation || '')}`;
+    fb.classList.add('show', 'err');
   }
 
   qIndex++;
-  setTimeout(showQuestion, 1800);
+  setTimeout(showQuestion, 1900);
 }
 
 async function endGame() {
+  clearInterval(timerInterval);
   document.getElementById('q-card').style.display     = 'none';
   document.getElementById('game-result').style.display = 'block';
 
-  const emoji = liveScore >= 800 ? '🏆' : liveScore >= 500 ? '🎉' : '💪';
-  document.getElementById('result-emoji').textContent = emoji;
-  document.getElementById('result-score').textContent = liveScore;
-  document.getElementById('result-label').textContent = 'puntos obtenidos';
+  const emoji = liveScore >= 800 ? '🏆' : liveScore >= 500 ? '🎉' : liveScore >= 300 ? '💪' : '📚';
+  document.getElementById('result-emoji').textContent  = emoji;
+  document.getElementById('result-score').textContent  = liveScore.toLocaleString();
+  document.getElementById('result-badges').innerHTML   = '';
 
-  // Save score
   try {
     const d = await api('POST', '/score', { subject_slug: currentSubject, score: liveScore }, STATE.token);
-    document.getElementById('result-xp').textContent = d.earned_xp ? `+${d.earned_xp} XP — ${d.message}` : '';
-    showXPPop(d.earned_xp || 0);
-    if(liveScore >= 800) launchConfetti();
-  } catch(e) {}
+    document.getElementById('result-xp').textContent = d.earned_xp
+      ? `+${d.earned_xp} XP — ${d.message}` : '';
+    if (d.earned_xp) showXPPop(d.earned_xp);
+    if (liveScore >= 800) launchConfetti();
+
+    // Render badges
+    if (d.badges?.length) {
+      document.getElementById('result-badges').innerHTML = d.badges
+        .map(b => `<div class="badge-chip">${b.icon} ${esc(b.label)}</div>`)
+        .join('');
+    }
+  } catch { /* score save failed silently */ }
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    LEADERBOARD
-═══════════════════════════════════════════════════════════ */
-async function populateLbSubjectFilter() {
-  if (STATE.subjects.length === 0) {
+══════════════════════════════════════════════════════════ */
+async function populateLbFilters() {
+  if (!STATE.subjects.length) {
     const sd = await api('GET', '/subjects');
     STATE.subjects = sd.subjects || [];
+    renderLandingSubjects();
   }
   const sel = document.getElementById('lb-subject-filter');
   if (sel.options.length > 1) return;
   STATE.subjects.forEach(s => {
     const o = document.createElement('option');
-    o.value = s.slug; o.textContent = `${s.icon} ${s.name}`;
+    o.value = s.slug;
+    o.textContent = `${s.icon} ${s.name}`;
     sel.appendChild(o);
   });
+
+  // Also populate teacher subject filter
+  const tSel = document.getElementById('t-subject-filter');
+  if (tSel && tSel.options.length === 1) {
+    STATE.subjects.forEach(s => {
+      const o = document.createElement('option');
+      o.value = s.slug;
+      o.textContent = `${s.icon} ${s.name}`;
+      tSel.appendChild(o);
+    });
+  }
 }
 
 async function loadLeaderboard() {
   const slug = document.getElementById('lb-subject-filter').value;
   const lvl  = document.getElementById('lb-level-filter').value;
   const body = document.getElementById('lb-body');
-  body.innerHTML = `<div class="text-center" style="padding:40px;color:var(--muted)"><div class="spinner" style="width:32px;height:32px;margin:0 auto 16px"></div>Cargando…</div>`;
+  body.innerHTML = `<div class="loading-box"><div class="spinner-lg spinner"></div>Cargando…</div>`;
 
-  let url = '/leaderboard?limit=20';
-  if (slug) url += `&subject_slug=${slug}`;
-  if (lvl)  url += `&education_level=${lvl}`;
+  let url = '/leaderboard?limit=25';
+  if (slug) url += `&subject_slug=${encodeURIComponent(slug)}`;
+  if (lvl)  url += `&education_level=${encodeURIComponent(lvl)}`;
 
   try {
     const d = await api('GET', url);
     const rows = d.leaderboard || [];
-    if (!rows.length) { body.innerHTML='<div class="text-center" style="padding:40px;color:var(--muted)">Aún no hay scores. ¡Sé el primero!</div>'; return; }
-    const rankClass = r => r===1?'gold':r===2?'silver':r===3?'bronze':'';
-    const levelLabel = l => ({ primaria:'Primaria', secundaria:'Secundaria', preparatoria:'Prepa', universidad:'Uni' }[l]||l||'—');
+    if (!rows.length) {
+      body.innerHTML = `<div class="empty-state"><div class="icon">🏆</div><p>Aún no hay scores. ¡Sé el primero!</p></div>`;
+      return;
+    }
+
+    const rankClass  = r => r === 1 ? 'gold' : r === 2 ? 'silver' : r === 3 ? 'bronze' : '';
+    const rankIcon   = r => r <= 3  ? ['🥇','🥈','🥉'][r-1] : r;
+    const levelLabel = l => ({primaria:'Primaria',secundaria:'Secundaria',preparatoria:'Prepa',universidad:'Uni'}[l] || l || '—');
+
     body.innerHTML = `
+      <div class="students-table-wrap">
       <table class="lb-table">
         <thead><tr>
-          <th>#</th><th>Jugador</th><th>Nivel</th><th>Materia</th><th>Score</th><th>XP</th>
+          <th>#</th>
+          <th>Jugador</th>
+          <th class="hide-mobile">Nivel</th>
+          <th class="hide-mobile">Materia</th>
+          <th>Score</th>
+          <th>XP</th>
         </tr></thead>
         <tbody>
-          ${rows.map(r=>`
+          ${rows.map(r => `
             <tr>
-              <td class="lb-rank ${rankClass(r.rank)}">${r.rank<=3?['🥇','🥈','🥉'][r.rank-1]:r.rank}</td>
-              <td class="lb-username">${r.username}</td>
-              <td><span class="lb-level">${levelLabel(r.education_level)}</span></td>
-              <td>${r.subject_icon||'📚'} ${r.subject||'—'}</td>
+              <td class="lb-rank ${rankClass(r.rank)}">${rankIcon(r.rank)}</td>
+              <td>
+                <div class="lb-user-cell">
+                  <div class="lb-avatar" style="background:${r.avatar_color || '#7c6af7'}">${(r.username || '?')[0].toUpperCase()}</div>
+                  <span class="lb-username">${esc(r.username)}</span>
+                </div>
+              </td>
+              <td class="hide-mobile"><span class="lb-tag">${levelLabel(r.education_level)}</span></td>
+              <td class="hide-mobile">${r.subject_icon || '📚'} ${esc(r.subject || '—')}</td>
               <td style="font-weight:800;color:var(--accent2)">${r.best_score.toLocaleString()}</td>
               <td style="color:var(--accent)">${r.total_xp.toLocaleString()}</td>
             </tr>`).join('')}
         </tbody>
-      </table>`;
-  } catch(e) { body.innerHTML='<div class="text-center" style="padding:40px;color:var(--red)">Error cargando ranking.</div>'; }
+      </table>
+      </div>`;
+  } catch { body.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>Error cargando ranking.</p></div>`; }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   FALLBACK QUESTIONS (offline / error)
-═══════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════
+   TEACHER PANEL
+══════════════════════════════════════════════════════════ */
+let _teacherTab = 'students';
+
+function switchTeacherTab(tab, el) {
+  _teacherTab = tab;
+  document.querySelectorAll('#teacher-tabs .tab-nav-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('teacher-tab-students').style.display = tab === 'students' ? 'block' : 'none';
+  document.getElementById('teacher-tab-ranking').style.display  = tab === 'ranking'  ? 'block' : 'none';
+  if (tab === 'ranking') loadTeacherRanking();
+}
+
+async function loadTeacherData() {
+  if (!STATE.token) return;
+  await populateLbFilters();
+
+  const slug = document.getElementById('t-subject-filter').value;
+  const lvl  = document.getElementById('t-level-filter').value;
+  const body = document.getElementById('teacher-students-body');
+  body.innerHTML = `<div class="loading-box"><div class="spinner-lg spinner"></div>Cargando alumnos…</div>`;
+
+  let url = '/teacher/students';
+  const params = [];
+  if (slug) params.push(`subject_slug=${encodeURIComponent(slug)}`);
+  if (lvl)  params.push(`education_level=${encodeURIComponent(lvl)}`);
+  if (params.length) url += '?' + params.join('&');
+
+  try {
+    const d = await api('GET', url, null, STATE.token);
+    const students = d.students || [];
+
+    if (!students.length) {
+      body.innerHTML = `<div class="empty-state"><div class="icon">👥</div>
+        <p>No tienes alumnos asignados aún.</p>
+        <button class="btn btn-green btn-sm mt-sm" onclick="openModal('modal-assign')">➕ Agregar alumno</button>
+      </div>`;
+      return;
+    }
+
+    const levelLabel = l => ({primaria:'Primaria',secundaria:'Secundaria',preparatoria:'Prepa',universidad:'Uni'}[l] || l || '—');
+
+    body.innerHTML = `
+      <div class="students-table-wrap">
+      <table class="data-table">
+        <thead><tr>
+          <th>Alumno</th>
+          <th>Nivel</th>
+          <th>XP Total</th>
+          <th>Mejor score</th>
+          <th class="hide-mobile">Partidas</th>
+          <th>ID</th>
+        </tr></thead>
+        <tbody>
+          ${students.map(s => `
+            <tr>
+              <td>
+                <div class="lb-user-cell">
+                  <div class="lb-avatar" style="background:${s.avatar_color || '#7c6af7'}">${(s.username || '?')[0].toUpperCase()}</div>
+                  <span class="fw-bold">${esc(s.username)}</span>
+                </div>
+              </td>
+              <td><span class="lb-tag">${levelLabel(s.education_level)}</span></td>
+              <td style="color:var(--accent);font-weight:700">${s.total_xp.toLocaleString()}</td>
+              <td style="color:var(--accent2);font-weight:700">${s.best_overall.toLocaleString()}</td>
+              <td class="hide-mobile text-muted">${s.total_games || 0}</td>
+              <td class="text-xs text-muted" style="font-family:monospace;cursor:pointer" 
+                  onclick="navigator.clipboard.writeText('${s.id}');showToast('ID copiado ✓')" 
+                  title="Clic para copiar">
+                ${s.id.slice(0,8)}…
+              </td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+      </div>
+      <div class="text-muted text-xs mt-sm">${students.length} alumno${students.length !== 1 ? 's' : ''} en tu grupo</div>`;
+  } catch {
+    body.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>Error cargando datos.</p></div>`;
+  }
+}
+
+async function loadTeacherRanking() {
+  const body = document.getElementById('teacher-ranking-body');
+  body.innerHTML = `<div class="loading-box"><div class="spinner-lg spinner"></div>Cargando…</div>`;
+
+  try {
+    const d = await api('GET', '/teacher/leaderboard', null, STATE.token);
+    const rows = d.leaderboard || [];
+
+    if (!rows.length) {
+      body.innerHTML = `<div class="empty-state"><div class="icon">🏆</div><p>Sin datos de ranking aún.</p></div>`;
+      return;
+    }
+
+    const rankIcon = r => r <= 3 ? ['🥇','🥈','🥉'][r-1] : r;
+    body.innerHTML = `
+      <div class="students-table-wrap">
+      <table class="lb-table">
+        <thead><tr>
+          <th>#</th><th>Alumno</th><th class="hide-mobile">Materia</th><th>Score</th><th>XP</th><th class="hide-mobile">Nivel</th>
+        </tr></thead>
+        <tbody>
+          ${rows.map(r => `
+            <tr>
+              <td class="lb-rank ${r.rank<=3?['gold','silver','bronze'][r.rank-1]:''}">${rankIcon(r.rank)}</td>
+              <td>
+                <div class="lb-user-cell">
+                  <div class="lb-avatar" style="background:${r.avatar_color || '#7c6af7'}">${(r.username||'?')[0].toUpperCase()}</div>
+                  <span class="lb-username">${esc(r.username)}</span>
+                </div>
+              </td>
+              <td class="hide-mobile">${r.subject_icon||'📚'} ${esc(r.subject||'—')}</td>
+              <td style="font-weight:800;color:var(--accent2)">${r.best_score.toLocaleString()}</td>
+              <td style="color:var(--accent)">${r.total_xp.toLocaleString()}</td>
+              <td class="hide-mobile"><span class="lb-tag">Lv ${r.level}</span></td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+      </div>`;
+  } catch {
+    body.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>Error cargando ranking.</p></div>`;
+  }
+}
+
+async function doAssignStudent() {
+  const sid  = document.getElementById('assign-student-id').value.trim();
+  const btn  = document.getElementById('assign-btn');
+  const msgEl= document.getElementById('assign-msg');
+
+  if (!sid) return setMsg(msgEl, 'Ingresa el ID del estudiante.', 'err');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Asignando…';
+
+  try {
+    const d = await api('POST', '/teacher/assign-student', { student_id: sid }, STATE.token);
+    if (d.error) setMsg(msgEl, d.error, 'err');
+    else {
+      setMsg(msgEl, `✅ ${d.message}`, 'ok');
+      document.getElementById('assign-student-id').value = '';
+      setTimeout(() => { closeModal('modal-assign'); loadTeacherData(); }, 1500);
+    }
+  } catch { setMsg(msgEl, 'Error de red.', 'err'); }
+  btn.disabled = false;
+  btn.innerHTML = 'Asignar estudiante';
+}
+
+/* ══════════════════════════════════════════════════════════
+   ADMIN PANEL
+══════════════════════════════════════════════════════════ */
+function switchAdminTab(tab, el) {
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('admin-' + tab).classList.add('active');
+
+  if (tab === 'overview') loadAdminStats();
+  if (tab === 'users')    loadAdminUsers();
+}
+
+async function loadAdminData() {
+  if (!STATE.token) return;
+  await loadAdminStats();
+}
+
+async function loadAdminStats() {
+  const body = document.getElementById('admin-stats-body');
+  body.innerHTML = `<div class="loading-box"><div class="spinner-lg spinner"></div>Cargando estadísticas…</div>`;
+
+  try {
+    const d = await api('GET', '/admin/stats', null, STATE.token);
+    if (d.error) { body.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>${esc(d.error)}</p></div>`; return; }
+
+    body.innerHTML = `
+      <div class="admin-stats-grid">
+        <div class="admin-stat">
+          <div class="admin-stat-num">${d.users?.total || 0}</div>
+          <div class="admin-stat-label">👥 Usuarios totales</div>
+        </div>
+        <div class="admin-stat">
+          <div class="admin-stat-num" style="color:var(--green)">${d.users?.students || 0}</div>
+          <div class="admin-stat-label">🎓 Estudiantes</div>
+        </div>
+        <div class="admin-stat">
+          <div class="admin-stat-num" style="color:var(--cyan)">${d.users?.teachers || 0}</div>
+          <div class="admin-stat-label">👩‍🏫 Profesores</div>
+        </div>
+        <div class="admin-stat">
+          <div class="admin-stat-num" style="color:var(--accent2)">${d.total_games || 0}</div>
+          <div class="admin-stat-label">🎮 Partidas totales</div>
+        </div>
+      </div>
+      <div class="text-xs text-muted mt-sm">Actualizado: ${new Date().toLocaleTimeString('es-MX')}</div>`;
+  } catch {
+    body.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>Error cargando estadísticas.</p></div>`;
+  }
+}
+
+async function loadAdminUsers() {
+  const role = document.getElementById('admin-role-filter').value;
+  const edu  = document.getElementById('admin-edu-filter').value;
+  const body = document.getElementById('admin-users-body');
+  body.innerHTML = `<div class="loading-box"><div class="spinner-lg spinner"></div>Cargando…</div>`;
+
+  let url = '/admin/users?limit=50';
+  if (role) url += `&role=${encodeURIComponent(role)}`;
+  if (edu)  url += `&education_level=${encodeURIComponent(edu)}`;
+
+  try {
+    const d = await api('GET', url, null, STATE.token);
+    if (d.error) { body.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>${esc(d.error)}</p></div>`; return; }
+
+    const users = d.users || [];
+    if (!users.length) {
+      body.innerHTML = `<div class="empty-state"><div class="icon">👥</div><p>Sin usuarios con ese filtro.</p></div>`;
+      return;
+    }
+
+    const levelLabel = l => ({primaria:'Primaria',secundaria:'Secundaria',preparatoria:'Prepa',universidad:'Uni'}[l] || l || '—');
+
+    body.innerHTML = `
+      <div class="students-table-wrap">
+      <table class="data-table">
+        <thead><tr>
+          <th>Usuario</th>
+          <th>Rol</th>
+          <th class="hide-mobile">Nivel</th>
+          <th class="hide-mobile">Estado</th>
+          <th>ID (copiar)</th>
+        </tr></thead>
+        <tbody>
+          ${users.map(u => `
+            <tr>
+              <td>
+                <div class="lb-user-cell">
+                  <div class="lb-avatar" style="background:${u.avatar_color || '#7c6af7'}">${(u.username||'?')[0].toUpperCase()}</div>
+                  <span class="fw-bold">${esc(u.username)}</span>
+                </div>
+              </td>
+              <td><span class="role-badge role-${u.role}">${u.role}</span></td>
+              <td class="hide-mobile text-muted">${levelLabel(u.education_level)}</td>
+              <td class="hide-mobile"><span style="color:${u.is_active?'var(--green)':'var(--red)'}">${u.is_active ? '✓ Activo' : '✗ Inactivo'}</span></td>
+              <td class="text-xs" style="font-family:monospace;cursor:pointer;color:var(--muted)"
+                  onclick="navigator.clipboard.writeText('${u.id}');showToast('ID copiado ✓')"
+                  title="Clic para copiar UUID">
+                ${u.id.slice(0,8)}…
+              </td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+      </div>
+      <div class="text-xs text-muted mt-sm">Mostrando ${users.length} de ${d.total} usuarios</div>`;
+  } catch {
+    body.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>Error cargando usuarios.</p></div>`;
+  }
+}
+
+async function doAdminAssign() {
+  const tid = document.getElementById('a-teacher-id').value.trim();
+  const sid = document.getElementById('a-student-id').value.trim();
+  const msg = document.getElementById('assign-admin-msg');
+  if (!tid || !sid) return setMsg(msg, 'Ambos campos son requeridos.', 'err');
+
+  try {
+    const d = await api('POST', '/admin/assign-teacher', { teacher_id: tid, student_id: sid }, STATE.token);
+    if (d.error) setMsg(msg, d.error, 'err');
+    else { setMsg(msg, `✅ ${d.message}`, 'ok'); }
+  } catch { setMsg(msg, 'Error de red.', 'err'); }
+}
+
+async function doAdminPromote() {
+  const uid = document.getElementById('p-user-id').value.trim();
+  const role = document.getElementById('p-role').value;
+  const key  = document.getElementById('p-override').value;
+  const msg  = document.getElementById('promote-msg');
+  if (!uid || !key) return setMsg(msg, 'UUID y clave son requeridos.', 'err');
+
+  try {
+    const d = await api('POST', '/admin/promote', { user_id: uid, role, override_key: key }, STATE.token);
+    if (d.error) setMsg(msg, d.error, 'err');
+    else setMsg(msg, `✅ ${d.message}`, 'ok');
+  } catch { setMsg(msg, 'Error de red.', 'err'); }
+}
+
+/* ══════════════════════════════════════════════════════════
+   FALLBACK QUESTIONS
+══════════════════════════════════════════════════════════ */
 function fallbackQuestions(slug) {
-  const bank = {
+  const banks = {
     matematicas: [
-      {q:"¿Cuánto es 12 × 8?",options:["96","88","104","84"],answer:0,explanation:"12×8=96"},
-      {q:"¿Cuál es la raíz cuadrada de 144?",options:["11","12","13","14"],answer:1,explanation:"√144=12"},
-      {q:"¿Cuánto es 2³?",options:["6","8","9","12"],answer:1,explanation:"2³=8"},
-      {q:"¿Qué es π (pi) aproximadamente?",options:["3.14","2.72","1.41","1.73"],answer:0,explanation:"π≈3.1416"},
-      {q:"¿Cuántos lados tiene un hexágono?",options:["5","6","7","8"],answer:1,explanation:"Hexágono = 6 lados"},
-      {q:"¿Cuánto es 15% de 200?",options:["25","30","35","40"],answer:1,explanation:"200×0.15=30"},
-      {q:"¿Cuánto es 7² - 5²?",options:["24","14","4","49"],answer:0,explanation:"49-25=24"},
-      {q:"Si x + 5 = 12, ¿cuánto es x?",options:["5","6","7","8"],answer:2,explanation:"x=12-5=7"},
-      {q:"¿Cuántos grados tiene un triángulo?",options:["90","180","270","360"],answer:1,explanation:"La suma de ángulos internos es 180°"},
-      {q:"¿Cuánto es 1000 ÷ 25?",options:["35","40","45","50"],answer:1,explanation:"1000/25=40"}
-    ]
+      {q:'¿Cuánto es 12 × 8?',            options:['96','88','104','84'],   answer:0,explanation:'12×8=96'},
+      {q:'¿Raíz cuadrada de 144?',         options:['11','12','13','14'],   answer:1,explanation:'√144=12'},
+      {q:'¿Cuánto es 2³?',                 options:['6','8','9','12'],      answer:1,explanation:'2³=2×2×2=8'},
+      {q:'¿Qué es π aproximadamente?',     options:['3.14','2.72','1.41','1.73'], answer:0,explanation:'π≈3.1416'},
+      {q:'¿Lados de un hexágono?',         options:['5','6','7','8'],       answer:1,explanation:'Hexágono=6 lados'},
+      {q:'¿15% de 200?',                   options:['25','30','35','40'],   answer:1,explanation:'200×0.15=30'},
+      {q:'¿7² - 5²?',                      options:['24','14','4','49'],    answer:0,explanation:'49-25=24'},
+      {q:'Si x+5=12, ¿cuánto es x?',       options:['5','6','7','8'],       answer:2,explanation:'x=12-5=7'},
+      {q:'Ángulos internos de un triángulo',options:['90°','180°','270°','360°'],answer:1,explanation:'Suman 180°'},
+      {q:'¿1000÷25?',                      options:['35','40','45','50'],   answer:1,explanation:'1000/25=40'},
+    ],
+    fisica: [
+      {q:'Unidad de fuerza en SI',          options:['Joule','Newton','Pascal','Watt'],answer:1,explanation:'Newton (N) = kg·m/s²'},
+      {q:'Velocidad de la luz (aprox.)',     options:['150 000 km/s','300 000 km/s','450 000 km/s','600 000 km/s'],answer:1,explanation:'≈299 792 km/s'},
+      {q:'Fórmula del trabajo',             options:['W=mgh','W=F·d','W=½mv²','W=Pt'],answer:1,explanation:'W=Fuerza×desplazamiento'},
+      {q:'Ley de Ohm',                      options:['V=IR','F=ma','E=mc²','P=IV'],   answer:0,explanation:'Voltaje=Corriente×Resistencia'},
+      {q:'Unidad de energía',               options:['Newton','Pascal','Joule','Watt'],answer:2,explanation:'Joule (J) es la unidad de energía'},
+      {q:'¿Qué mide un amperímetro?',       options:['Voltaje','Corriente','Resistencia','Potencia'],answer:1,explanation:'Mide la intensidad de corriente'},
+      {q:'Primera Ley de Newton',           options:['Inercia','Acción/Reacción','F=ma','Gravitación'],answer:0,explanation:'Ley de inercia'},
+      {q:'Fórmula velocidad-distancia',     options:['v=d/t','v=d×t','v=t/d','v=d²/t'],answer:0,explanation:'velocidad=distancia/tiempo'},
+      {q:'Punto de ebullición del agua (°C)',options:['0','50','100','212'],answer:2,explanation:'100°C a nivel del mar'},
+      {q:'Unidad de potencia',              options:['Joule','Newton','Pascal','Watt'],answer:3,explanation:'Watt (W) = J/s'},
+    ],
   };
-  const generic = Array.from({length:10},(_,i)=>({
-    q:`Pregunta ${i+1} de muestra sobre ${slug}`,
-    options:["Opción A","Opción B","Opción C","Opción D"],
+  return banks[slug] || Array.from({length:10},(_,i)=>({
+    q:`Pregunta ${i+1} sobre ${slug}`,
+    options:['Opción A','Opción B','Opción C','Opción D'],
     answer: Math.floor(Math.random()*4),
-    explanation:"Respuesta de muestra."
+    explanation:'Respuesta de ejemplo.'
   }));
-  return bank[slug] || generic;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   XP POP
-═══════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════
+   EFFECTS
+══════════════════════════════════════════════════════════ */
 function showXPPop(xp) {
   const el = document.getElementById('xp-pop');
-  el.textContent = `+${xp} XP ganado ⭐`;
+  el.textContent = `+${xp} XP ⭐`;
   el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 3000);
+  clearTimeout(showXPPop._t);
+  showXPPop._t = setTimeout(() => el.classList.remove('show'), 3000);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   CONFETTI
-═══════════════════════════════════════════════════════════ */
 function launchConfetti() {
   const canvas = document.getElementById('confetti-canvas');
   canvas.style.display = 'block';
-  canvas.width  = window.innerWidth;
-  canvas.height = window.innerHeight;
+  canvas.width  = innerWidth;
+  canvas.height = innerHeight;
   const ctx = canvas.getContext('2d');
-  const pieces = Array.from({length:120},()=>({
-    x: Math.random()*canvas.width,
-    y: Math.random()*canvas.height - canvas.height,
-    w: 8+Math.random()*8,
-    h: 4+Math.random()*4,
-    color: ['#7c6af7','#f7c06a','#4ade80','#f87171','#60a5fa'][Math.floor(Math.random()*5)],
-    speed: 2+Math.random()*4,
-    spin: (Math.random()-.5)*.2,
-    angle: Math.random()*Math.PI*2
+  const pieces = Array.from({length:130},() => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height - canvas.height,
+    w: 7 + Math.random() * 9,
+    h: 3 + Math.random() * 5,
+    color: ['#7c6af7','#f7c06a','#4ade80','#f87171','#38bdf8','#f472b6'][Math.floor(Math.random()*6)],
+    speed: 1.5 + Math.random() * 4,
+    spin: (Math.random()-.5) * .2,
+    angle: Math.random() * Math.PI * 2,
   }));
   let frame;
-  function draw() {
+  (function draw() {
     ctx.clearRect(0,0,canvas.width,canvas.height);
-    pieces.forEach(p=>{
+    pieces.forEach(p => {
       ctx.save();
       ctx.translate(p.x,p.y);
       ctx.rotate(p.angle);
@@ -1384,38 +2170,50 @@ function launchConfetti() {
       ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
       ctx.restore();
       p.y += p.speed; p.angle += p.spin;
-      if(p.y > canvas.height) { p.y=-10; p.x=Math.random()*canvas.width; }
+      if (p.y > canvas.height) { p.y = -10; p.x = Math.random() * canvas.width; }
     });
     frame = requestAnimationFrame(draw);
-  }
-  draw();
-  setTimeout(()=>{ cancelAnimationFrame(frame); canvas.style.display='none'; },4000);
+  })();
+  setTimeout(() => { cancelAnimationFrame(frame); canvas.style.display='none'; }, 4500);
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════
    HELPERS
-═══════════════════════════════════════════════════════════ */
+══════════════════════════════════════════════════════════ */
 function setMsg(el, text, type) {
   el.textContent = text;
   el.className   = 'msg' + (type ? ` show ${type}` : '');
 }
 
-/* ═══════════════════════════════════════════════════════════
-   INIT
-═══════════════════════════════════════════════════════════ */
-(async function init() {
-  updateNavUser();
+// XSS-safe escaping
+function esc(str) {
+  return String(str ?? '')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
 
-  // Load subjects for landing page preview
+/* ══════════════════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════════════════ */
+(async function init() {
+  updateNav();
+
+  // Preload subjects
   try {
     const sd = await api('GET', '/subjects');
     STATE.subjects = sd.subjects || [];
     renderLandingSubjects();
-  } catch(e) {}
+  } catch { /* offline: no subjects preview */ }
 
-  // If logged in, go to dashboard
-  if (STATE.token) {
-    showPage('dashboard');
+  // Role-based auto-redirect if logged in
+  if (STATE.token && STATE.profile) {
+    const role = STATE.profile.role;
+    if (role === 'admin')   showPage('admin');
+    else if (role === 'teacher' || role === 'school_admin') showPage('teacher');
+    else showPage('dashboard');
   }
 })();
 </script>
