@@ -1079,7 +1079,7 @@ async function loadDashboard() {
   renderLandingSubjects();
 
   // Load profile with scores
-  const pd = await api('GET', '/profile', null, STATE.token);
+  const pd = await api('GET', '/me', null, STATE.token);
   STATE.scores = pd.scores || [];
 
   // aggregate stats
@@ -1108,7 +1108,7 @@ async function loadDashboard() {
 function renderSubjectGrid() {
   const grid = document.getElementById('subject-grid');
   grid.innerHTML = STATE.subjects.map(sub => {
-    const sc = STATE.scores.find(s => s.subject_slug === sub.slug || s.subject_id);
+    const sc = STATE.scores.find(s => s.subjects?.slug === sub.slug);
     return `
       <div class="subj-card" onclick="startGame('${sub.slug}','${sub.name}','${sub.icon}')">
         ${sc ? `<div class="subj-level-badge">Lv ${sc.current_level||1}</div>` : ''}
