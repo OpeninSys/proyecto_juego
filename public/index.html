@@ -884,14 +884,14 @@
 <!-- Assign Student Modal (teacher) -->
 <div class="modal-overlay" id="modal-assign">
   <div class="modal-box">
-    <button class="modal-close" onclick="closeModal('modal-assign')">✕</button>
+    <button class="modal-close" id="modal-close-assign">✕</button>
     <div class="card-title">➕ Agregar estudiante</div>
     <p class="text-sm text-muted mb">Ingresa el ID del estudiante para asignarlo a tu grupo.</p>
     <div class="form-group">
       <label class="form-label">ID del estudiante (UUID)</label>
       <input class="form-input" id="assign-student-id" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
     </div>
-    <button class="btn btn-primary btn-full" id="assign-btn" onclick="doAssignStudent()">Asignar estudiante</button>
+    <button class="btn btn-primary btn-full" id="assign-btn" id="assign-btn">Asignar estudiante</button>
     <div class="msg" id="assign-msg"></div>
   </div>
 </div>
@@ -899,11 +899,11 @@
 <div id="app">
   <!-- ════════════ NAVBAR ════════════ -->
   <nav>
-    <div class="logo" onclick="showPage(STATE.token ? (STATE.profile?.role === 'teacher' ? 'teacher' : STATE.profile?.role === 'admin' ? 'admin' : 'dashboard') : 'landing')">
+    <div class="logo" id="logo-btn">
       🎮 EduGame
     </div>
     <div class="nav-right">
-      <div id="user-chip" onclick="showPage(STATE.profile?.role === 'teacher' ? 'teacher' : STATE.profile?.role === 'admin' ? 'admin' : 'dashboard')">
+      <div id="user-chip" id="user-chip">
         <div class="nav-avatar" id="nav-avatar">?</div>
         <div>
           <div id="nav-username">—</div>
@@ -911,9 +911,9 @@
         </div>
       </div>
       <span id="nav-role-badge" class="role-badge role-student" style="display:none">Estudiante</span>
-      <button class="btn btn-outline btn-sm hide-mobile" id="btn-lb-nav" onclick="showPage('leaderboard')">🏆 Ranking</button>
-      <button class="btn btn-primary btn-sm" id="btn-login-nav" onclick="showPage('auth')">Ingresar</button>
-      <button class="btn btn-ghost btn-sm" id="btn-logout" style="display:none" onclick="logout()">Salir →</button>
+      <button class="btn btn-outline btn-sm hide-mobile" id="btn-lb-nav">🏆 Ranking</button>
+      <button class="btn btn-primary btn-sm" id="btn-login-nav">Ingresar</button>
+      <button class="btn btn-ghost btn-sm" id="btn-logout">Salir →</button>
     </div>
   </nav>
 
@@ -924,8 +924,8 @@
       <h1>Aprende más rápido<br><span class="hi">jugando en serio</span></h1>
       <p>Sube de nivel, gana XP y compite con tu escuela. 9 materias, IA generando preguntas únicas cada partida.</p>
       <div class="hero-btns">
-        <button class="btn btn-primary btn-lg" onclick="showPage('auth')">¡Empezar gratis!</button>
-        <button class="btn btn-outline btn-lg" onclick="showPage('leaderboard')">Ver ranking 🏆</button>
+        <button class="btn btn-primary btn-lg" >¡Empezar gratis!</button>
+        <button class="btn btn-outline btn-lg" >Ver ranking 🏆</button>
       </div>
     </div>
 
@@ -959,8 +959,8 @@
   <div class="page" id="page-auth">
     <div class="auth-wrap">
       <div class="auth-tabs">
-        <div class="auth-tab active" id="tab-login" onclick="switchTab('login')">Ingresar</div>
-        <div class="auth-tab" id="tab-register" onclick="switchTab('register')">Crear cuenta</div>
+        <div class="auth-tab active" id="tab-login" id="tab-login">Ingresar</div>
+        <div class="auth-tab" id="tab-register" id="tab-register">Crear cuenta</div>
       </div>
 
       <!-- LOGIN -->
@@ -973,12 +973,12 @@
           <div class="form-group">
             <label class="form-label">Contraseña</label>
             <input class="form-input" id="login-pass" type="password" placeholder="••••••••" autocomplete="current-password"
-              onkeydown="if(event.key==='Enter') doLogin()" />
+              id="login-pass-enter" />
           </div>
-          <button class="btn btn-primary btn-full" id="login-btn" onclick="doLogin()">Ingresar →</button>
+          <button class="btn btn-primary btn-full" id="login-btn" >Ingresar →</button>
           <div class="msg" id="login-msg"></div>
         </div>
-        <p class="text-center mt-sm text-sm text-muted" style="cursor:pointer" onclick="showPage('landing')">← Volver al inicio</p>
+        <p class="text-center mt-sm text-sm text-muted" style="cursor:pointer" class="back-landing">← Volver al inicio</p>
       </div>
 
       <!-- REGISTER -->
@@ -991,7 +991,7 @@
           <div class="form-group">
             <label class="form-label">Contraseña (mín. 8 caracteres)</label>
             <input class="form-input" id="reg-pass" type="password" placeholder="••••••••"
-              autocomplete="new-password" oninput="updatePwStrength(this.value)" />
+              autocomplete="new-password" id="pw-input" />
             <div class="pw-bar mt-sm"><div class="pw-fill" id="pw-fill"></div></div>
           </div>
           <div class="two-col">
@@ -1005,10 +1005,10 @@
               <input class="form-input" id="reg-age" type="number" min="6" max="100" placeholder="15" />
             </div>
           </div>
-          <button class="btn btn-primary btn-full" id="reg-btn" onclick="doRegister()">Crear cuenta →</button>
+          <button class="btn btn-primary btn-full" id="reg-btn" >Crear cuenta →</button>
           <div class="msg" id="reg-msg"></div>
         </div>
-        <p class="text-center mt-sm text-sm text-muted" style="cursor:pointer" onclick="showPage('landing')">← Volver al inicio</p>
+        <p class="text-center mt-sm text-sm text-muted" style="cursor:pointer" class="back-landing">← Volver al inicio</p>
       </div>
     </div>
   </div>
@@ -1020,7 +1020,7 @@
         <div class="dash-sub">Bienvenido de vuelta</div>
         <div class="dash-greeting">¡Hola, <em id="dash-name">jugador</em>! 👋</div>
       </div>
-      <button class="btn btn-outline btn-sm" onclick="showPage('leaderboard')">🏆 Ranking</button>
+      <button class="btn btn-outline btn-sm" id="btn-dash-lb">🏆 Ranking</button>
     </div>
 
     <!-- XP bar -->
@@ -1063,7 +1063,7 @@
   <!-- ════════════ PAGE: GAME ════════════ -->
   <div class="page" id="page-game">
     <div class="game-header">
-      <button class="btn btn-outline btn-sm" onclick="confirmLeaveGame()">← Salir</button>
+      <button class="btn btn-outline btn-sm" id="btn-leave-game">← Salir</button>
       <div class="game-title" id="game-title">Matemáticas</div>
       <div class="score-pills">
         <div class="score-pill">⭐ <span class="val" id="live-score">0</span></div>
@@ -1097,9 +1097,9 @@
       <div class="result-xp" id="result-xp"></div>
       <div class="result-badges" id="result-badges"></div>
       <div class="result-actions">
-        <button class="btn btn-primary" onclick="startGame(currentSubject,currentSubjectName,currentSubjectIcon)">Jugar de nuevo 🎮</button>
-        <button class="btn btn-outline" onclick="showPage('dashboard')">Ver materias</button>
-        <button class="btn btn-gold"    onclick="showPage('leaderboard')">Ranking 🏆</button>
+        <button class="btn btn-primary" id="btn-replay">Jugar de nuevo 🎮</button>
+        <button class="btn btn-outline" id="btn-to-dash">Ver materias</button>
+        <button class="btn btn-gold"    id="btn-to-lb">Ranking 🏆</button>
       </div>
     </div>
   </div>
@@ -1111,14 +1111,14 @@
         <div class="dash-greeting">🏆 Ranking Global</div>
         <div class="dash-sub">Los mejores jugadores de EduGame</div>
       </div>
-      <button class="btn btn-outline btn-sm" onclick="showPage(STATE.token ? 'dashboard' : 'landing')">← Volver</button>
+      <button class="btn btn-outline btn-sm" id="btn-lb-back">← Volver</button>
     </div>
 
     <div class="lb-filters">
-      <select class="lb-select" id="lb-subject-filter" onchange="loadLeaderboard()">
+      <select class="lb-select" id="lb-subject-filter">
         <option value="">Todas las materias</option>
       </select>
-      <select class="lb-select" id="lb-level-filter" onchange="loadLeaderboard()">
+      <select class="lb-select" id="lb-level-filter">
         <option value="">Todos los niveles</option>
         <option value="primaria">Primaria</option>
         <option value="secundaria">Secundaria</option>
@@ -1142,23 +1142,23 @@
         <div class="panel-title">👩‍🏫 Mis estudiantes</div>
       </div>
       <div class="flex gap-sm">
-        <button class="btn btn-green btn-sm" onclick="openModal('modal-assign')">➕ Agregar alumno</button>
-        <button class="btn btn-outline btn-sm" onclick="loadTeacherData()">↻ Actualizar</button>
+        <button class="btn btn-green btn-sm" id="btn-open-assign">➕ Agregar alumno</button>
+        <button class="btn btn-outline btn-sm" id="btn-teacher-refresh">↻ Actualizar</button>
       </div>
     </div>
 
     <div class="tab-nav" id="teacher-tabs">
-      <div class="tab-nav-btn active" onclick="switchTeacherTab('students',this)">👥 Alumnos</div>
-      <div class="tab-nav-btn" onclick="switchTeacherTab('ranking',this)">🏆 Ranking de clase</div>
+      <div class="tab-nav-btn active" data-tab="students">👥 Alumnos</div>
+      <div class="tab-nav-btn" data-tab="ranking">🏆 Ranking de clase</div>
     </div>
 
     <!-- Students tab -->
     <div id="teacher-tab-students">
       <div class="lb-filters mb">
-        <select class="lb-select" id="t-subject-filter" onchange="loadTeacherData()">
+        <select class="lb-select" id="t-subject-filter">
           <option value="">Todas las materias</option>
         </select>
-        <select class="lb-select" id="t-level-filter" onchange="loadTeacherData()">
+        <select class="lb-select" id="t-level-filter">
           <option value="">Todos los niveles</option>
           <option value="primaria">Primaria</option>
           <option value="secundaria">Secundaria</option>
@@ -1190,14 +1190,14 @@
         <div class="dash-sub">Panel de administrador</div>
         <div class="panel-title">⚙️ Administración</div>
       </div>
-      <button class="btn btn-outline btn-sm" onclick="loadAdminData()">↻ Actualizar</button>
+      <button class="btn btn-outline btn-sm" id="btn-admin-refresh">↻ Actualizar</button>
     </div>
 
     <div class="admin-tabs">
-      <div class="admin-tab active" onclick="switchAdminTab('overview',this)">📊 Resumen</div>
-      <div class="admin-tab" onclick="switchAdminTab('users',this)">👥 Usuarios</div>
-      <div class="admin-tab" onclick="switchAdminTab('assign',this)">🔗 Asignaciones</div>
-      <div class="admin-tab" onclick="switchAdminTab('promote',this)">⬆️ Roles</div>
+      <div class="admin-tab active" data-admin-tab="overview">📊 Resumen</div>
+      <div class="admin-tab" data-admin-tab="users">👥 Usuarios</div>
+      <div class="admin-tab" data-admin-tab="assign">🔗 Asignaciones</div>
+      <div class="admin-tab" data-admin-tab="promote">⬆️ Roles</div>
     </div>
 
     <!-- Overview -->
@@ -1210,13 +1210,13 @@
     <!-- Users -->
     <div class="admin-section" id="admin-users">
       <div class="lb-filters mb">
-        <select class="lb-select" id="admin-role-filter" onchange="loadAdminUsers()">
+        <select class="lb-select" id="admin-role-filter">
           <option value="">Todos los roles</option>
           <option value="student">Estudiantes</option>
           <option value="teacher">Profesores</option>
           <option value="admin">Admins</option>
         </select>
-        <select class="lb-select" id="admin-edu-filter" onchange="loadAdminUsers()">
+        <select class="lb-select" id="admin-edu-filter">
           <option value="">Todos los niveles</option>
           <option value="primaria">Primaria</option>
           <option value="secundaria">Secundaria</option>
@@ -1243,7 +1243,7 @@
           <label class="form-label">ID del alumno (UUID)</label>
           <input class="form-input" id="a-student-id" placeholder="UUID del alumno" />
         </div>
-        <button class="btn btn-primary" onclick="doAdminAssign()">Asignar →</button>
+        <button class="btn btn-primary" id="btn-admin-assign">Asignar →</button>
         <div class="msg" id="assign-admin-msg"></div>
       </div>
     </div>
@@ -1269,7 +1269,7 @@
           <label class="form-label">Clave de override</label>
           <input class="form-input" id="p-override" type="password" placeholder="••••••••" />
         </div>
-        <button class="btn btn-danger" onclick="doAdminPromote()">Cambiar rol</button>
+        <button class="btn btn-danger" id="btn-admin-promote">Cambiar rol</button>
         <div class="msg" id="promote-msg"></div>
       </div>
     </div>
@@ -1560,9 +1560,8 @@ function renderSubjectGrid() {
   grid.innerHTML = STATE.subjects.map(sub => {
     const sc = STATE.scores.find(s => s.subjects?.slug === sub.slug);
     return `
-      <div class="subj-card" onclick="startGame('${esc(sub.slug)}','${esc(sub.name)}','${esc(sub.icon || '📚')}')"
-           role="button" tabindex="0"
-           onkeydown="if(event.key==='Enter') startGame('${esc(sub.slug)}','${esc(sub.name)}','${esc(sub.icon || '📚')}')">
+      <div class="subj-card" data-slug="${esc(sub.slug)}" data-name="${esc(sub.name)}" data-icon="${esc(sub.icon || '📚')}"
+           role="button" tabindex="0">
         ${sc ? `<div class="subj-lv-badge">Lv ${sc.current_level || 1}</div>` : ''}
         <span class="subj-icon">${sub.icon || '📚'}</span>
         <div class="subj-name">${esc(sub.name)}</div>
@@ -1579,7 +1578,7 @@ function renderLandingSubjects() {
   const c = document.getElementById('landing-subjects');
   if (!STATE.subjects.length) return;
   c.innerHTML = STATE.subjects.map(s =>
-    `<div class="pill" onclick="showPage('auth')">${s.icon} ${esc(s.name)}</div>`
+    `<div class="pill auth-pill">${s.icon} ${esc(s.name)}</div>`
   ).join('');
 }
 
@@ -1613,6 +1612,19 @@ async function startGame(slug, name, icon) {
   document.getElementById('game-loading').style.display  = 'block';
   clearInterval(timerInterval);
 
+  const userLevel = STATE.profile?.education_level || 'secundaria';
+
+  // 1. Try local bank first (instant)
+  const localQs = getLocalQuestions(slug, userLevel, 10);
+  if (localQs && localQs.length >= 5) {
+    questions = localQs;
+    document.getElementById('game-loading').style.display = 'none';
+    document.getElementById('q-card').style.display       = 'block';
+    showQuestion();
+    return;
+  }
+
+  // 2. No local bank → try AI
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -1620,13 +1632,8 @@ async function startGame(slug, name, icon) {
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 1000,
-        system: `Eres un generador de preguntas para un juego educativo en español.
-Genera exactamente 10 preguntas de opción múltiple sobre la materia indicada.
-Responde SOLO con un array JSON válido, sin explicaciones ni backticks.
-Formato exacto: [{"q":"pregunta","options":["A","B","C","D"],"answer":0,"explanation":"explicacion breve"}]
-"answer" es el índice (0-3) de la opción correcta.
-Las preguntas deben ser variadas, claras y apropiadas para estudiantes.`,
-        messages: [{ role: 'user', content: `Genera 10 preguntas de ${currentSubjectName}.` }]
+        system: `Eres un generador de preguntas para un juego educativo en español para estudiantes de nivel ${userLevel}. Genera exactamente 10 preguntas de opción múltiple. Responde SOLO con JSON array sin texto extra. Formato: [{"q":"pregunta","options":["A","B","C","D"],"answer":0,"explanation":"breve"}]`,
+        messages: [{ role: 'user', content: `Genera 10 preguntas de ${currentSubjectName} nivel ${userLevel}.` }]
       })
     });
     const data = await res.json();
@@ -1641,7 +1648,6 @@ Las preguntas deben ser variadas, claras y apropiadas para estudiantes.`,
   document.getElementById('q-card').style.display       = 'block';
   showQuestion();
 }
-
 function showQuestion() {
   if (qIndex >= questions.length) { endGame(); return; }
   const q = questions[qIndex];
@@ -1669,7 +1675,7 @@ function showQuestion() {
   const grid = document.getElementById('options-grid');
   const letters = ['A', 'B', 'C', 'D'];
   grid.innerHTML = (q.options || []).map((opt, i) => `
-    <button class="option-btn" onclick="handleAnswer(${i})">
+    <button class="option-btn" data-idx="${i}">
       <span class="opt-letter">${letters[i]}</span>
       ${esc(opt)}
     </button>`).join('');
@@ -1846,7 +1852,7 @@ async function loadTeacherData() {
     if (!students.length) {
       body.innerHTML = `<div class="empty-state"><div class="icon">👥</div>
         <p>No tienes alumnos asignados aún.</p>
-        <button class="btn btn-green btn-sm mt-sm" onclick="openModal('modal-assign')">➕ Agregar alumno</button>
+        <button class="btn btn-green btn-sm mt-sm" id="btn-open-assign">➕ Agregar alumno</button>
       </div>`;
       return;
     }
@@ -1878,7 +1884,7 @@ async function loadTeacherData() {
               <td style="color:var(--accent2);font-weight:700">${s.best_overall.toLocaleString()}</td>
               <td class="hide-mobile text-muted">${s.total_games || 0}</td>
               <td class="text-xs text-muted" style="font-family:monospace;cursor:pointer" 
-                  onclick="navigator.clipboard.writeText('${s.id}');showToast('ID copiado ✓')" 
+                  data-copy="${s.id}" 
                   title="Clic para copiar">
                 ${s.id.slice(0,8)}…
               </td>
@@ -2053,7 +2059,7 @@ async function loadAdminUsers() {
               <td class="hide-mobile text-muted">${levelLabel(u.education_level)}</td>
               <td class="hide-mobile"><span style="color:${u.is_active?'var(--green)':'var(--red)'}">${u.is_active ? '✓ Activo' : '✗ Inactivo'}</span></td>
               <td class="text-xs" style="font-family:monospace;cursor:pointer;color:var(--muted)"
-                  onclick="navigator.clipboard.writeText('${u.id}');showToast('ID copiado ✓')"
+                  data-copy="${u.id}" 
                   title="Clic para copiar UUID">
                 ${u.id.slice(0,8)}…
               </td>
@@ -2196,22 +2202,331 @@ function esc(str) {
 }
 
 /* ══════════════════════════════════════════════════════════
+   BANCO DE PREGUNTAS LOCAL
+══════════════════════════════════════════════════════════ */
+const QUESTION_BANK = {
+  matematicas: {
+    primaria:[
+      {q:'¿Cuánto es 7 × 8?',options:['54','56','64','48'],answer:1,explanation:'7×8=56'},
+      {q:'¿Cuántos lados tiene un cuadrado?',options:['3','4','5','6'],answer:1,explanation:'El cuadrado tiene 4 lados iguales'},
+      {q:'¿Cuánto es 144 ÷ 12?',options:['10','11','12','13'],answer:2,explanation:'144÷12=12'},
+      {q:'¿Cuál es el 50% de 80?',options:['20','30','40','50'],answer:2,explanation:'50% de 80 = 40'},
+      {q:'¿Cuánto es 2⁴?',options:['8','14','16','12'],answer:2,explanation:'2⁴=2×2×2×2=16'},
+      {q:'Si x + 9 = 17, ¿cuánto es x?',options:['6','7','8','9'],answer:2,explanation:'x=17-9=8'},
+      {q:'¿Cuántos ángulos tiene un triángulo?',options:['2','3','4','5'],answer:1,explanation:'Todo triángulo tiene 3 ángulos'},
+      {q:'¿Qué número sigue en la serie: 2, 4, 8, 16...?',options:['24','28','30','32'],answer:3,explanation:'Se multiplica por 2 cada vez'},
+      {q:'¿Cuánto es 15% de 200?',options:['25','30','35','40'],answer:1,explanation:'200×0.15=30'},
+      {q:'¿Cuál es el área de un rectángulo de 6×4?',options:['20','22','24','26'],answer:2,explanation:'Área=base×altura=6×4=24'},
+    ],
+    secundaria:[
+      {q:'¿Cuál es la raíz cuadrada de 169?',options:['11','12','13','14'],answer:2,explanation:'√169=13 porque 13²=169'},
+      {q:'Simplifica: 3x + 5x - 2x',options:['4x','5x','6x','8x'],answer:2,explanation:'(3+5-2)x = 6x'},
+      {q:'¿Cuánto es log₁₀(1000)?',options:['2','3','4','100'],answer:1,explanation:'log₁₀(1000)=3 porque 10³=1000'},
+      {q:'Pendiente de la recta y = 3x + 7',options:['7','3','10','-3'],answer:1,explanation:'En y=mx+b, m es la pendiente → m=3'},
+      {q:'¿Cuánto es sen(90°)?',options:['0','0.5','1','-1'],answer:2,explanation:'sen(90°)=1'},
+      {q:'Factoriza: x² - 9',options:['(x-3)²','(x+3)(x-3)','(x-9)(x+1)','(x+9)(x-1)'],answer:1,explanation:'Diferencia de cuadrados: (x+3)(x-3)'},
+      {q:'¿Cuál es el valor de π²/6 aprox.?',options:['1.44','1.55','1.64','1.77'],answer:2,explanation:'π²/6 ≈ 1.6449 (serie de Euler-Riemann)'},
+      {q:'En un triángulo rectángulo, la hipotenusa mide 13 y un cateto 5. El otro cateto mide:',options:['8','10','11','12'],answer:3,explanation:'Pitágoras: 13²-5²=169-25=144, √144=12'},
+      {q:'¿Cuántos términos tiene (a+b)³?',options:['3','4','5','6'],answer:1,explanation:'(a+b)³ = a³+3a²b+3ab²+b³ → 4 términos'},
+      {q:'Resuelve: 2x² - 8 = 0',options:['x=±2','x=±4','x=±8','x=2'],answer:0,explanation:'2x²=8 → x²=4 → x=±2'},
+    ],
+    preparatoria:[
+      {q:'Límite de (x²-1)/(x-1) cuando x→1',options:['0','1','2','indefinido'],answer:2,explanation:'Factorizando: (x+1)(x-1)/(x-1)=x+1→2'},
+      {q:'Derivada de f(x) = x³ - 2x² + 5',options:['3x² - 4x','3x² - 2x','x² - 4x','3x - 4x'],answer:0,explanation:"f'(x)=3x²-4x"},
+      {q:'∫ 2x dx = ?',options:['x²+C','2x²+C','x+C','2+C'],answer:0,explanation:'∫2x dx = x²+C (regla de potencias)'},
+      {q:'¿Cuánto es e⁰?',options:['0','1','e','indefinido'],answer:1,explanation:'Cualquier número elevado a 0 es 1'},
+      {q:'Número de permutaciones de 5 elementos: P(5,3)',options:['10','20','60','120'],answer:2,explanation:'P(5,3)=5!/(5-3)!=120/2=60'},
+      {q:'cos(60°) = ?',options:['√3/2','1/2','√2/2','1'],answer:1,explanation:'cos(60°)=1/2'},
+      {q:'¿Cuántas soluciones tiene x²+1=0 en los reales?',options:['0','1','2','infinitas'],answer:0,explanation:'No hay raíces reales porque x²=-1 no tiene solución real'},
+      {q:'La pendiente de la tangente a y=x² en x=3 es:',options:['3','6','9','12'],answer:1,explanation:"y'=2x, en x=3: pendiente=6"},
+      {q:'Serie geométrica: 3 + 6 + 12 + 24 + ... razón = ?',options:['2','3','4','6'],answer:0,explanation:'Cada término es el doble del anterior: r=2'},
+      {q:'¿Cuánto es ln(e³)?',options:['3','e³','3e','e'],answer:0,explanation:'ln(eⁿ)=n → ln(e³)=3'},
+    ],
+    universidad:[
+      {q:'Si f(x)=eˣ·sen(x), ¿cuál es f\'(x)?',options:['eˣcos(x)','eˣ(sen(x)+cos(x))','eˣcos(x)-sen(x)','eˣsen(x)'],answer:1,explanation:'Regla del producto: eˣsen(x)+eˣcos(x)=eˣ(sen+cos)'},
+      {q:'¿Cuánto es ∫₀¹ x² dx?',options:['1/3','1/2','1','2/3'],answer:0,explanation:'[x³/3]₀¹ = 1/3 - 0 = 1/3'},
+      {q:'Matriz identidad 2×2:',options:['[[1,0],[0,1]]','[[0,1],[1,0]]','[[1,1],[0,0]]','[[0,0],[1,1]]'],answer:0,explanation:'La identidad tiene 1s en la diagonal principal y 0s en el resto'},
+      {q:'Transformada de Laplace de f(t)=1 es:',options:['1/s','1/s²','s','1'],answer:0,explanation:'L{1}=1/s para s>0'},
+      {q:'¿Cuántos puntos críticos tiene f(x)=x³-3x?',options:['0','1','2','3'],answer:2,explanation:"f'=3x²-3=0 → x=±1, dos puntos críticos"},
+      {q:'Vector gradiente de f(x,y)=x²+y² en (1,2):',options:['(2,4)','(1,2)','(2,2)','(4,2)'],answer:0,explanation:'∇f=(2x,2y), en (1,2): (2,4)'},
+      {q:'La serie de Taylor de eˣ en x=0 es:',options:['Σxⁿ/n!','Σxⁿ','Σnxⁿ','Σxⁿ/n'],answer:0,explanation:'eˣ = Σ(n=0 a ∞) xⁿ/n!'},
+      {q:'Determinante de [[2,3],[1,4]]:',options:['5','11','8','-5'],answer:0,explanation:'det=2×4-3×1=8-3=5'},
+      {q:'¿Cuántos axiomas tiene el espacio vectorial?',options:['6','8','10','12'],answer:1,explanation:'Los 8 axiomas definen un espacio vectorial'},
+      {q:'Polinomio de Lagrange para n+1 puntos tiene grado:',options:['n','n+1','n-1','2n'],answer:0,explanation:'El polinomio interpolador de Lagrange tiene grado ≤ n'},
+    ]
+  },
+  fisica: {
+    primaria:[
+      {q:'¿Qué es la gravedad?',options:['Una fuerza que atrae objetos','Un tipo de luz','Una forma de calor','Un tipo de sonido'],answer:0,explanation:'La gravedad es la fuerza que atrae objetos hacia la Tierra'},
+      {q:'¿En qué estado el agua es sólida?',options:['Vapor','Líquida','Hielo','Gas'],answer:2,explanation:'El hielo es el estado sólido del agua'},
+      {q:'¿Qué sentido mide la intensidad del sonido?',options:['Vista','Oído','Tacto','Olfato'],answer:1,explanation:'El oído percibe el sonido; su intensidad se mide en decibeles'},
+      {q:'¿Cuál es la fuente de luz natural más importante?',options:['Luna','Foco','Sol','Vela'],answer:2,explanation:'El Sol es la principal fuente de luz natural de la Tierra'},
+      {q:'¿Qué tipo de palanca es un tijera?',options:['Primer grado','Segundo grado','Tercer grado','No es palanca'],answer:0,explanation:'Las tijeras son palancas de primer grado: el fulcro está entre la fuerza y la carga'},
+      {q:'¿A cuántos grados Celsius hierve el agua?',options:['0°C','50°C','100°C','200°C'],answer:2,explanation:'El agua hierve a 100°C a nivel del mar'},
+      {q:'¿Cuál es la unidad de medida de la masa?',options:['Metro','Kilogramo','Litro','Newton'],answer:1,explanation:'El kilogramo (kg) es la unidad del SI para masa'},
+      {q:'¿Qué produce la fricción entre dos objetos?',options:['Frío','Calor','Luz','Sonido'],answer:1,explanation:'La fricción convierte energía cinética en calor'},
+      {q:'¿Qué es la energía potencial?',options:['Energía del movimiento','Energía almacenada por posición','Energía eléctrica','Energía nuclear'],answer:1,explanation:'La energía potencial depende de la posición del objeto'},
+      {q:'¿Cuál es la velocidad de la luz?',options:['100 km/s','300,000 km/s','1,000 km/s','150,000 km/s'],answer:1,explanation:'La luz viaja a ≈300,000 km/s en el vacío'},
+    ],
+    secundaria:[
+      {q:'Fórmula del trabajo mecánico',options:['W=mgh','W=F·d','W=½mv²','W=Pt'],answer:1,explanation:'W=Fuerza×desplazamiento (cuando son paralelos)'},
+      {q:'Ley de Ohm',options:['V=IR','F=ma','E=mc²','P=IV'],answer:0,explanation:'Voltaje=Corriente×Resistencia'},
+      {q:'Unidad de fuerza en el SI',options:['Joule','Newton','Pascal','Watt'],answer:1,explanation:'Newton (N) = kg·m/s²'},
+      {q:'Primera Ley de Newton',options:['Inercia','Acción/Reacción','F=ma','Gravitación'],answer:0,explanation:'La ley de inercia: un objeto en reposo/movimiento sigue así sin fuerza neta'},
+      {q:'¿Qué mide un voltímetro?',options:['Corriente','Resistencia','Voltaje','Potencia'],answer:2,explanation:'El voltímetro mide la diferencia de potencial (voltios)'},
+      {q:'Velocidad = ?',options:['d×t','d/t','t/d','d²/t'],answer:1,explanation:'v=distancia/tiempo'},
+      {q:'Tipo de onda del sonido',options:['Transversal','Longitudinal','Electromagnética','Gravitacional'],answer:1,explanation:'El sonido es una onda longitudinal de presión'},
+      {q:'Energía cinética fórmula',options:['mgh','½mv²','Fd','mc²'],answer:1,explanation:'Ec=½mv² (masa por velocidad al cuadrado, entre 2)'},
+      {q:'¿Cuál es la unidad de presión?',options:['Newton','Joule','Pascal','Watt'],answer:2,explanation:'Pascal (Pa) = N/m²'},
+      {q:'Ley de reflexión de la luz',options:['Ángulo incidencia = reflexión','La luz se dobla','La luz se absorbe','La luz desaparece'],answer:0,explanation:'Ángulo de incidencia = ángulo de reflexión'},
+    ],
+  },
+  espanol: {
+    primaria:[
+      {q:'¿Cuál es el sujeto de "Los niños corren en el parque"?',options:['corren','en el parque','Los niños','parque'],answer:2,explanation:'El sujeto realiza la acción: "Los niños"'},
+      {q:'¿Qué es un sustantivo?',options:['Una acción','Un nombre de persona, lugar o cosa','Un descriptor','Un conector'],answer:1,explanation:'El sustantivo nombra personas, lugares, animales y cosas'},
+      {q:'¿Cuál de estas palabras está bien acentuada?',options:['arbol','árbol','Arbol','arból'],answer:1,explanation:'"árbol" lleva tilde porque es esdrújula y siempre se acentúan'},
+      {q:'"Correr" es un verbo en modo...',options:['Indicativo','Subjuntivo','Imperativo','Infinitivo'],answer:3,explanation:'Los verbos terminados en -ar, -er, -ir están en infinitivo'},
+      {q:'¿Qué tipo de oración es "¡Qué lindo día!"?',options:['Declarativa','Interrogativa','Exclamativa','Imperativa'],answer:2,explanation:'Las exclamativas expresan emoción y usan ¡!'},
+      {q:'Sinónimo de "alegre"',options:['Triste','Feliz','Enojado','Cansado'],answer:1,explanation:'Alegre y feliz tienen significado similar'},
+      {q:'Antónimo de "calor"',options:['Tibio','Temperatura','Frío','Fuego'],answer:2,explanation:'El antónimo (opuesto) de calor es frío'},
+      {q:'¿Cuántas sílabas tiene "mariposa"?',options:['3','4','5','6'],answer:1,explanation:'Ma-ri-po-sa = 4 sílabas'},
+      {q:'¿Cuál es el plural de "café"?',options:['cafes','café','cafés','cafeses'],answer:2,explanation:'El plural de café es cafés (con tilde)'},
+      {q:'¿Qué es una metáfora?',options:['Comparar usando como','Exagerar algo','Decir algo es otra cosa','Repetir sonidos'],answer:2,explanation:'La metáfora dice que una cosa ES otra: "tus ojos son estrellas"'},
+    ],
+  },
+  programacion: {
+    primaria:[
+      {q:'¿Qué hace un algoritmo?',options:['Guarda datos','Resuelve problemas paso a paso','Diseña gráficos','Conecta a internet'],answer:1,explanation:'Un algoritmo es una secuencia de pasos para resolver un problema'},
+      {q:'¿Qué es una variable en programación?',options:['Un error','Un espacio que guarda datos','Un tipo de función','Un bucle'],answer:1,explanation:'Una variable es un contenedor con nombre que guarda información'},
+      {q:'¿Qué hace un bucle "for"?',options:['Toma decisiones','Repite código un número de veces','Guarda datos','Muestra texto'],answer:1,explanation:'El bucle for repite instrucciones un número determinado de veces'},
+      {q:'En binario, ¿cuánto vale 101?',options:['3','5','7','4'],answer:1,explanation:'101 en binario = 1×4 + 0×2 + 1×1 = 5'},
+      {q:'¿Qué símbolo se usa en la mayoría de lenguajes para los comentarios en JavaScript?',options:['##','//','**','--'],answer:1,explanation:'// inicia un comentario de una línea en JS, C, Java, etc.'},
+      {q:'¿Qué es un array?',options:['Una función especial','Una colección de elementos','Un tipo de bucle','Un operador'],answer:1,explanation:'Un array es una lista ordenada de elementos'},
+      {q:'¿Qué significa "HTML"?',options:['HyperText Making Language','HyperText Markup Language','High Text Machine Language','Home Tool Markup Language'],answer:1,explanation:'HTML = HyperText Markup Language'},
+      {q:'¿Qué hace el operador "===" en JavaScript?',options:['Asigna un valor','Compara valor e tipo','Suma valores','Niega un valor'],answer:1,explanation:'"===" compara valor Y tipo estrictamente'},
+      {q:'¿Qué es una función en programación?',options:['Un error del código','Bloque de código reutilizable','Tipo de variable','Condición lógica'],answer:1,explanation:'Una función agrupa código para reutilizarlo con un nombre'},
+      {q:'¿Qué lenguaje se usa para dar estilo a páginas web?',options:['HTML','JavaScript','CSS','Python'],answer:2,explanation:'CSS (Cascading Style Sheets) define el estilo visual'},
+    ],
+  },
+  historia: {
+    secundaria:[
+      {q:'¿En qué año llegó Colón a América?',options:['1492','1394','1500','1521'],answer:0,explanation:'Cristóbal Colón llegó el 12 de octubre de 1492'},
+      {q:'¿Quién fue el primer presidente de México?',options:['Benito Juárez','Guadalupe Victoria','Porfirio Díaz','Miguel Hidalgo'],answer:1,explanation:'Guadalupe Victoria fue el primer presidente de México (1824-1829)'},
+      {q:'¿En qué año inició la Revolución Francesa?',options:['1776','1789','1804','1815'],answer:1,explanation:'La Revolución Francesa inició en 1789 con la toma de la Bastilla'},
+      {q:'¿Qué civilización construyó las pirámides de Egipto?',options:['Griega','Romana','Egipcia','Mesopotámica'],answer:2,explanation:'Los antiguos egipcios construyeron las pirámides como tumbas para sus faraones'},
+      {q:'La Segunda Guerra Mundial terminó en:',options:['1943','1944','1945','1946'],answer:2,explanation:'La WWII terminó en 1945 con la rendición de Alemania y Japón'},
+      {q:'¿Quién fue el líder de la independencia de México?',options:['Benito Juárez','Miguel Hidalgo','Emiliano Zapata','Porfirio Díaz'],answer:1,explanation:'Miguel Hidalgo inició el movimiento de independencia el 16 de septiembre de 1810'},
+      {q:'¿En qué continente se originó la humanidad según estudios actuales?',options:['Asia','Europa','África','América'],answer:2,explanation:'El Homo sapiens surgió en África hace unos 300,000 años'},
+      {q:'¿Qué fue el Imperio Romano?',options:['Una democracia griega','Un gran imperio mediterráneo','Un reino nórdico','Una civilización asiática'],answer:1,explanation:'Roma fue uno de los imperios más extensos del mundo antiguo'},
+      {q:'¿Qué es la Edad Media?',options:['Del 500 a.C. al 500 d.C.','Del 500 al 1500 d.C.','Del 1500 al 2000 d.C.','Del 0 al 500 d.C.'],answer:1,explanation:'La Edad Media abarca aproximadamente del siglo V al XV (476-1492 d.C.)'},
+      {q:'La Guerra Fría fue entre:',options:['México y EEUU','Francia y Alemania','EEUU y URSS','China y Japón'],answer:2,explanation:'La Guerra Fría (1947-1991) fue la rivalidad entre EEUU y la Unión Soviética'},
+    ],
+  },
+  quimica: {
+    secundaria:[
+      {q:'¿Cuántos elementos tiene la tabla periódica actual?',options:['92','100','118','128'],answer:2,explanation:'La tabla periódica tiene 118 elementos conocidos'},
+      {q:'Símbolo del oro',options:['Go','Ag','Au','Or'],answer:2,explanation:'Au viene del latín "Aurum" = oro'},
+      {q:'¿Qué gas forma la mayor parte del aire?',options:['Oxígeno','Argón','Nitrógeno','CO₂'],answer:2,explanation:'El nitrógeno (N₂) representa ≈78% del aire'},
+      {q:'pH del agua pura',options:['0','5','7','14'],answer:2,explanation:'El agua pura tiene pH=7 (neutro)'},
+      {q:'Fórmula del dióxido de carbono',options:['CO','CO₂','C₂O','CO₃'],answer:1,explanation:'CO₂: un carbono y dos oxígenos'},
+      {q:'¿Qué es un enlace covalente?',options:['Transferencia de electrones','Compartir electrones','Atracción de iones','Fusión nuclear'],answer:1,explanation:'El enlace covalente comparte pares de electrones entre átomos'},
+      {q:'Número atómico del hidrógeno',options:['0','1','2','4'],answer:1,explanation:'H tiene 1 protón → número atómico = 1'},
+      {q:'¿Qué es una reacción exotérmica?',options:['Absorbe calor','Libera calor','No involucra calor','Produce luz'],answer:1,explanation:'Una reacción exotérmica libera energía en forma de calor'},
+      {q:'¿Cuál es el gas más liviano?',options:['Helio','Nitrógeno','Hidrógeno','Oxígeno'],answer:2,explanation:'El hidrógeno (H₂) es el gas más liviano del universo'},
+      {q:'La sal de mesa es:',options:['NaCl','CaCO₃','HCl','KCl'],answer:0,explanation:'NaCl = Cloruro de sodio = sal de mesa'},
+    ],
+  },
+  biologia: {
+    secundaria:[
+      {q:'¿Cuántos cromosomas tiene una célula humana normal?',options:['23','44','46','48'],answer:2,explanation:'Las células humanas tienen 46 cromosomas (23 pares)'},
+      {q:'¿Qué es la fotosíntesis?',options:['Respiración celular','Convertir luz en glucosa','Digestión de grasas','Reproducción celular'],answer:1,explanation:'Fotosíntesis: las plantas convierten luz solar y CO₂ en glucosa y O₂'},
+      {q:'¿Dónde ocurre la fotosíntesis?',options:['Mitocondria','Ribosoma','Cloroplasto','Núcleo'],answer:2,explanation:'La fotosíntesis ocurre en los cloroplastos'},
+      {q:'¿Qué es el ADN?',options:['Proteína','Ácido desoxirribonucleico','Lípido','Carbohidrato'],answer:1,explanation:'ADN = Ácido Desoxirribonucleico, portador de la información genética'},
+      {q:'¿Cuál es la unidad básica de la vida?',options:['Átomo','Tejido','Célula','Órgano'],answer:2,explanation:'La célula es la unidad estructural y funcional básica de todos los seres vivos'},
+      {q:'Orgánulo que produce energía (ATP)',options:['Núcleo','Ribosoma','Mitocondria','Vacuola'],answer:2,explanation:'La mitocondria es la "central energética" de la célula'},
+      {q:'¿Qué hace el ribosoma?',options:['Produce energía','Sintetiza proteínas','Digiere nutrientes','Almacena agua'],answer:1,explanation:'Los ribosomas sintetizan proteínas a partir del ARN mensajero'},
+      {q:'Teoría de la evolución propuesta por:',options:['Mendel','Newton','Darwin','Pasteur'],answer:2,explanation:'Charles Darwin propuso la evolución por selección natural (1859)'},
+      {q:'¿Qué es el ecosistema?',options:['Solo los seres vivos','Solo el ambiente','Seres vivos + ambiente','Solo los animales'],answer:2,explanation:'El ecosistema incluye todos los organismos y su entorno físico'},
+      {q:'Tipo de célula sin núcleo definido',options:['Eucariota','Procariota','Animal','Vegetal'],answer:1,explanation:'Las células procariotas (bacterias) no tienen núcleo membranoso'},
+    ],
+  },
+  geografia: {
+    secundaria:[
+      {q:'¿Cuál es el océano más grande del mundo?',options:['Atlántico','Índico','Ártico','Pacífico'],answer:3,explanation:'El Océano Pacífico es el más grande, cubriendo más del 30% de la Tierra'},
+      {q:'Capital de Australia',options:['Sydney','Melbourne','Brisbane','Canberra'],answer:3,explanation:'Canberra es la capital de Australia (muchos confunden con Sydney)'},
+      {q:'¿Cuántos continentes hay?',options:['5','6','7','8'],answer:2,explanation:'Hay 7 continentes: África, América, Antártida, Asia, Europa, Oceanía, y América del Norte/Sur'},
+      {q:'Río más largo del mundo',options:['Amazonas','Nilo','Yangtsé','Misisipi'],answer:1,explanation:'El Nilo (6,650 km) es considerado el río más largo del mundo'},
+      {q:'¿En qué continente está México?',options:['Sudamérica','América del Norte','Europa','América Central'],answer:1,explanation:'México forma parte de América del Norte'},
+      {q:'Montaña más alta del mundo',options:['K2','Kilimanjaro','Mont Blanc','Everest'],answer:3,explanation:'El Monte Everest (8,849 m) es la montaña más alta del mundo'},
+      {q:'¿Cuántos países tiene América Latina?',options:['15','20','25','33'],answer:3,explanation:'América Latina tiene 33 países'},
+      {q:'Capital de Japón',options:['Osaka','Kioto','Tokio','Hiroshima'],answer:2,explanation:'Tokio es la capital de Japón y una de las ciudades más pobladas del mundo'},
+      {q:'¿Qué es el Trópico de Cáncer?',options:['El polo norte','Línea imaginaria a 23.5° norte del ecuador','El ecuador','El meridiano de Greenwich'],answer:1,explanation:'El Trópico de Cáncer está a 23.5° latitud norte'},
+      {q:'País más grande del mundo (por superficie)',options:['China','EEUU','Canadá','Rusia'],answer:3,explanation:'Rusia es el país más grande con 17 millones de km²'},
+    ],
+  },
+  ingles: {
+    primaria:[
+      {q:'"Red" en español significa:',options:['Azul','Verde','Rojo','Amarillo'],answer:2,explanation:'"Red" = Rojo en español'},
+      {q:'¿Cómo se dice "manzana" en inglés?',options:['Orange','Banana','Apple','Grape'],answer:2,explanation:'"Apple" = manzana'},
+      {q:'¿Cuál es el plural de "child"?',options:['childs','childes','children','childs'],answer:2,explanation:'"Children" es el plural irregular de "child" (niño)'},
+      {q:'"I am happy" significa:',options:['Estoy triste','Estoy enojado','Estoy feliz','Tengo hambre'],answer:2,explanation:'"I am happy" = Estoy feliz'},
+      {q:'¿Cuál es el verbo "to be" en pasado (was/were) para "they"?',options:['was','were','been','be'],answer:1,explanation:'"They were" = ellos/ellas estaban/eran'},
+      {q:'Número 7 en inglés',options:['Six','Seven','Eight','Nine'],answer:1,explanation:'"Seven" = 7'},
+      {q:'"The cat is on the table" – ¿Dónde está el gato?',options:['Bajo la mesa','Al lado de la mesa','Sobre la mesa','Frente a la mesa'],answer:2,explanation:'"On" significa encima/sobre'},
+      {q:'¿Cuál es el presente continuo de "run"?',options:['runned','running','runs','ran'],answer:1,explanation:'"Running" = gerundio de run (correr)'},
+      {q:'"Good morning" se usa:',options:['En la tarde','En la noche','En la mañana','En cualquier momento'],answer:2,explanation:'"Good morning" = Buenos días (en la mañana)'},
+      {q:'¿Cómo se dice "¿Cómo te llamas?" en inglés?',options:['How are you?','What is your name?','Where are you from?','How old are you?'],answer:1,explanation:'"What is your name?" = ¿Cómo te llamas?'},
+    ],
+  },
+};
+
+// Obtener preguntas del banco local filtradas por materia y nivel
+function getLocalQuestions(slug, educationLevel, count = 10) {
+  const levelMap = { primaria:'primaria', secundaria:'secundaria', preparatoria:'preparatoria', universidad:'universidad' };
+  const level = levelMap[educationLevel] || 'secundaria';
+  const bank = QUESTION_BANK[slug];
+  if (!bank) return null;
+  // Try exact level, fallback to any available level
+  const pool = bank[level] || bank[Object.keys(bank)[0]] || [];
+  if (pool.length < 3) return null;
+  // Shuffle and return count
+  const shuffled = [...pool].sort(() => Math.random() - .5);
+  return shuffled.slice(0, Math.min(count, shuffled.length)).map(q => ({
+    q: q.q,
+    options: q.options,
+    answer: typeof q.answer === 'number' ? q.answer : q.options.indexOf(q.respuestaCorrecta),
+    explanation: q.explanation || q.explicacion || ''
+  }));
+}
+
+/* ══════════════════════════════════════════════════════════
    INIT
 ══════════════════════════════════════════════════════════ */
 (async function init() {
   updateNav();
 
-  // Preload subjects
+  // ── Bind all event listeners (replaces all onclick= in HTML) ──
+
+  // Logo
+  const logo = document.querySelector('.logo');
+  if (logo) logo.addEventListener('click', () => {
+    const r = STATE.profile?.role;
+    showPage(STATE.token ? (r==='teacher'||r==='school_admin' ? 'teacher' : r==='admin' ? 'admin' : 'dashboard') : 'landing');
+  });
+
+  // User chip
+  const chip = document.getElementById('user-chip');
+  if (chip) chip.addEventListener('click', () => {
+    const r = STATE.profile?.role;
+    showPage(r==='teacher'||r==='school_admin' ? 'teacher' : r==='admin' ? 'admin' : 'dashboard');
+  });
+
+  // Nav buttons
+  document.getElementById('btn-lb-nav')?.addEventListener('click', () => showPage('leaderboard'));
+  document.getElementById('btn-login-nav')?.addEventListener('click', () => showPage('auth'));
+  document.getElementById('btn-logout')?.addEventListener('click', logout);
+
+  // Landing hero buttons
+  document.querySelectorAll('.hero-btns .btn-primary').forEach(b => b.addEventListener('click', () => showPage('auth')));
+  document.querySelectorAll('.hero-btns .btn-outline').forEach(b => b.addEventListener('click', () => showPage('leaderboard')));
+
+  // Auth tabs
+  document.getElementById('tab-login')?.addEventListener('click', () => switchTab('login'));
+  document.getElementById('tab-register')?.addEventListener('click', () => switchTab('register'));
+
+  // Auth forms
+  document.getElementById('login-btn')?.addEventListener('click', doLogin);
+  document.getElementById('reg-btn')?.addEventListener('click', doRegister);
+  document.getElementById('login-pass-enter')?.addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+  document.getElementById('pw-input')?.addEventListener('input', e => updatePwStrength(e.target.value));
+
+  // Back to landing links
+  document.querySelectorAll('.back-landing').forEach(el => el.addEventListener('click', () => showPage('landing')));
+
+  // Dashboard ranking button
+  document.getElementById('btn-dash-lb')?.addEventListener('click', () => showPage('leaderboard'));
+
+  // Game buttons
+  document.getElementById('btn-leave-game')?.addEventListener('click', confirmLeaveGame);
+  document.getElementById('btn-replay')?.addEventListener('click', () => startGame(currentSubject, currentSubjectName, currentSubjectIcon));
+  document.getElementById('btn-to-dash')?.addEventListener('click', () => showPage('dashboard'));
+  document.getElementById('btn-to-lb')?.addEventListener('click', () => showPage('leaderboard'));
+
+  // Leaderboard back
+  document.getElementById('btn-lb-back')?.addEventListener('click', () => showPage(STATE.token ? 'dashboard' : 'landing'));
+
+  // Leaderboard filters
+  document.getElementById('lb-subject-filter')?.addEventListener('change', loadLeaderboard);
+  document.getElementById('lb-level-filter')?.addEventListener('change', loadLeaderboard);
+
+  // Teacher panel
+  document.getElementById('btn-open-assign')?.addEventListener('click', () => openModal('modal-assign'));
+  document.getElementById('btn-teacher-refresh')?.addEventListener('click', loadTeacherData);
+  document.getElementById('modal-close-assign')?.addEventListener('click', () => closeModal('modal-assign'));
+  document.getElementById('assign-btn')?.addEventListener('click', doAssignStudent);
+  document.querySelectorAll('[data-tab]').forEach(btn => {
+    btn.addEventListener('click', function() { switchTeacherTab(this.dataset.tab, this); });
+  });
+  document.getElementById('t-subject-filter')?.addEventListener('change', loadTeacherData);
+  document.getElementById('t-level-filter')?.addEventListener('change', loadTeacherData);
+
+  // Admin panel
+  document.getElementById('btn-admin-refresh')?.addEventListener('click', loadAdminData);
+  document.querySelectorAll('[data-admin-tab]').forEach(btn => {
+    btn.addEventListener('click', function() { switchAdminTab(this.dataset.adminTab, this); });
+  });
+  document.getElementById('admin-role-filter')?.addEventListener('change', loadAdminUsers);
+  document.getElementById('admin-edu-filter')?.addEventListener('change', loadAdminUsers);
+  document.getElementById('btn-admin-assign')?.addEventListener('click', doAdminAssign);
+  document.getElementById('btn-admin-promote')?.addEventListener('click', doAdminPromote);
+
+  // Subject grid (delegated) - clicks on .subj-card
+  document.getElementById('subject-grid')?.addEventListener('click', e => {
+    const card = e.target.closest('.subj-card');
+    if (card) startGame(card.dataset.slug, card.dataset.name, card.dataset.icon);
+  });
+  document.getElementById('subject-grid')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const card = e.target.closest('.subj-card');
+      if (card) startGame(card.dataset.slug, card.dataset.name, card.dataset.icon);
+    }
+  });
+
+  // Options grid (delegated)
+  document.getElementById('options-grid')?.addEventListener('click', e => {
+    const btn = e.target.closest('.option-btn');
+    if (btn && !btn.disabled) handleAnswer(parseInt(btn.dataset.idx));
+  });
+
+  // Copy ID buttons (delegated – teacher and admin tables)
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('[data-copy]');
+    if (btn) { navigator.clipboard.writeText(btn.dataset.copy); showToast('ID copiado ✓'); }
+  });
+
+  // Landing subject pills (delegated)
+  document.getElementById('landing-subjects')?.addEventListener('click', e => {
+    if (e.target.closest('.auth-pill')) showPage('auth');
+  });
+
+  // Close modal on backdrop click
+  document.getElementById('modal-assign')?.addEventListener('click', e => {
+    if (e.target.id === 'modal-assign') closeModal('modal-assign');
+  });
+
+  // ── Preload subjects ──
   try {
     const sd = await api('GET', '/subjects');
     STATE.subjects = sd.subjects || [];
     renderLandingSubjects();
-  } catch { /* offline: no subjects preview */ }
+    populateLbSubjectFilter();
+  } catch { /* offline */ }
 
-  // Role-based auto-redirect if logged in
+  // ── Role-based auto-redirect ──
   if (STATE.token && STATE.profile) {
     const role = STATE.profile.role;
-    if (role === 'admin')   showPage('admin');
+    if (role === 'admin') showPage('admin');
     else if (role === 'teacher' || role === 'school_admin') showPage('teacher');
     else showPage('dashboard');
   }
