@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduGame – Aprende Jugando</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ──────────────────────────────────────────────
+       TOKENS
+    ────────────────────────────────────────────── */
+    :root {
+      --bg:         #0d0f1a;
+      --surface:    #151828;
+      --card:       #1c2038;
+      --border:     #2a2f52;
+      --accent:     #7c6af7;
+      --accent2:    #f7c06a;
+      --green:      #4ade80;
+      --red:        #f87171;
+      --text:       #e8eaf6;
+      --muted:      #8890b5;
+      --radius:     16px;
+      --gap:        20px;
+      --font-head:  'Nunito', sans-serif;
+      --font-body:  'Space Grotesk', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ──────────────────────────────────────────────
+       ESTRELLAS DE FONDO
+    ────────────────────────────────────────────── */
+    #stars {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      overflow: hidden;
+    }
+    .star {
+      position: absolute;
+      background: #fff;
+      border-radius: 50%;
+      animation: twinkle var(--d, 3s) var(--delay, 0s) infinite alternate ease-in-out;
+    }
+    @keyframes twinkle { from { opacity: .1; } to { opacity: .9; } }
+
+    /* ──────────────────────────────────────────────
+       LAYOUT WRAPPER
+    ────────────────────────────────────────────── */
+    #app {
+      position: relative; z-index: 1;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 16px 80px;
+    }
+
+    /* ──────────────────────────────────────────────
+       NAVBAR
+    ────────────────────────────────────────────── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 0 16px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .logo {
+      font-family: var(--font-head);
+      font-size: 1.6rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -1px;
+    }
+    .logo span { font-size: 1.4rem; }
+    #nav-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    #user-info {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 14px 6px 8px;
+    }
+    #user-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .85rem;
+      font-weight: 800;
+      color: #fff;
+      background: var(--accent);
+    }
+    #user-name { font-weight: 700; font-size: .9rem; }
+    #user-xp { font-size: .75rem; color: var(--accent2); }
+
+    /* ──────────────────────────────────────────────
+       BOTONES
+    ────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-head);
+      font-weight: 800;
+      font-size: .9rem;
+      padding: 9px 20px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      transition: transform .15s, box-shadow .15s, opacity .15s;
+    }
+    .btn:hover  { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(124,106,247,.35); }
+    .btn:active { transform: translateY(0); }
+    .btn-primary { background: linear-gradient(135deg, #7c6af7, #9b8af9); color: #fff; }
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--border);
+      color: var(--text);
+    }
+    .btn-outline:hover { border-color: var(--accent); box-shadow: 0 6px 20px rgba(124,106,247,.2); }
+    .btn-danger { background: linear-gradient(135deg, #ef4444, #f87171); color: #fff; }
+    .btn-gold   { background: linear-gradient(135deg, #f7c06a, #f9a83f); color: #1c1a10; }
+    .btn-sm { padding: 6px 14px; font-size: .8rem; }
+    .btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+    /* ──────────────────────────────────────────────
+       PÁGINAS / VISTAS
+    ────────────────────────────────────────────── */
+    .page { display: none; animation: fadeUp .4s ease both; }
+    .page.active { display: block; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ──────────────────────────────────────────────
+       HERO – LANDING
+    ────────────────────────────────────────────── */
+    .hero {
+      text-align: center;
+      padding: 80px 0 48px;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(124,106,247,.15);
+      border: 1px solid rgba(124,106,247,.4);
+      color: var(--accent);
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border-radius: 999px;
+      padding: 5px 14px;
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      font-family: var(--font-head);
+      font-size: clamp(2.4rem, 7vw, 4.2rem);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -2px;
+      margin-bottom: 20px;
+    }
+    .hero h1 .hi { color: var(--accent2); }
+    .hero p {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 520px;
+      margin: 0 auto 36px;
+      line-height: 1.7;
+    }
+    .hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+    /* floating subjects preview */
+    .subjects-float {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin: 48px auto 0;
+      max-width: 600px;
+    }
+    .subject-chip {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: .85rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: transform .2s, border-color .2s, box-shadow .2s;
+    }
+    .subject-chip:hover {
+      transform: scale(1.08);
+      border-color: var(--accent);
+      box-shadow: 0 0 14px rgba(124,106,247,.3);
+    }
+
+    /* ──────────────────────────────────────────────
+       CARDS
+    ────────────────────────────────────────────── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+    }
+    .card-title {
+      font-family: var(--font-head);
+      font-weight: 800;
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ──────────────────────────────────────────────
+       AUTH (registro / login)
+    ────────────────────────────────────────────── */
+    .auth-wrap {
+      max-width: 420px;
+      margin: 60px auto 0;
+    }
+    .auth-tabs {
+      display: flex;
+      background: var(--surface);
+      border-radius: 999px;
+      padding: 4px;
+      margin-bottom: 28px;
+    }
+    .auth-tab {
+      flex: 1;
+      text-align: center;
+      padding: 9px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: .9rem;
+      color: var(--muted);
+      transition: background .2s, color .2s;
+    }
+    .auth-tab.active { background: var(--accent); color: #fff; }
+
+    /* form */
+    .form-group { margin-bottom: 16px; }
+    .form-label {
+      display: block;
+      font-size: .8rem;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .form-input {
+      width: 100%;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 14px;
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: .95rem;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .form-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(124,106,247,.2);
+    }
+    .form-input::placeholder { color: var(--muted); }
+
+    .msg {
+      margin-top: 14px;
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: .88rem;
+      font-weight: 600;
+      display: none;
+    }
+    .msg.show { display: block; }
+    .msg.ok   { background: rgba(74,222,128,.1); border: 1px solid rgba(74,222,128,.3); color: var(--green); }
+    .msg.err  { background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.3); color: var(--red); }
+
+    /* ──────────────────────────────────────────────
+       DASHBOARD
+    ────────────────────────────────────────────── */
+    .dash-header {
+      padding: 44px 0 28px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .dash-greeting {
+      font-family: var(--font-head);
+      font-size: 1.8rem;
+      font-weight: 900;
+      letter-spacing: -1px;
+    }
+    .dash-greeting em { color: var(--accent2); font-style: normal; }
+
+    /* stats bar */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: var(--gap);
+      margin-bottom: var(--gap);
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--accent-c, #7c6af744) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .stat-num {
+      font-family: var(--font-head);
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .stat-label { font-size: .75rem; color: var(--muted); margin-top: 4px; font-weight: 600; text-transform: uppercase; }
+
+    /* level bar */
+    .level-bar-wrap { margin: 6px 0 20px; }
+    .level-bar-label { display: flex; justify-content: space-between; font-size: .78rem; color: var(--muted); margin-bottom: 5px; }
+    .level-bar {
+      height: 8px;
+      background: var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .level-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 999px;
+      transition: width .6s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* subject grid */
+    .subject-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: var(--gap);
+      margin-bottom: var(--gap);
+    }
+    .subj-card {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 18px;
+      cursor: pointer;
+      transition: transform .2s, border-color .2s, box-shadow .2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .subj-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      box-shadow: 0 12px 36px rgba(124,106,247,.2);
+    }
+    .subj-icon { font-size: 2.2rem; margin-bottom: 10px; display: block; }
+    .subj-name { font-family: var(--font-head); font-weight: 800; font-size: 1rem; }
+    .subj-desc { font-size: .78rem; color: var(--muted); margin: 4px 0 12px; line-height: 1.5; }
+    .subj-score {
+      font-size: .8rem;
+      font-weight: 700;
+      color: var(--accent2);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .subj-level-badge {
+      position: absolute;
+      top: 12px; right: 12px;
+      background: rgba(124,106,247,.15);
+      border: 1px solid rgba(124,106,247,.3);
+      color: var(--accent);
+      font-size: .7rem;
+      font-weight: 800;
+      border-radius: 999px;
+      padding: 2px 8px;
+    }
+
+    /* ──────────────────────────────────────────────
+       GAME VIEW
+    ────────────────────────────────────────────── */
+    .game-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 32px 0 20px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .game-title {
+      font-family: var(--font-head);
+      font-weight: 900;
+      font-size: 1.5rem;
+      letter-spacing: -1px;
+    }
+    .score-display {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .score-badge {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 16px;
+      font-weight: 800;
+      font-size: .9rem;
+    }
+    .score-badge .val { color: var(--accent2); }
+
+    /* question card */
+    .q-card {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      padding: 36px 32px 28px;
+      margin-bottom: var(--gap);
+      position: relative;
+      overflow: hidden;
+    }
+    .q-card::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 160px; height: 160px;
+      background: radial-gradient(circle, rgba(124,106,247,.15), transparent 70%);
+      pointer-events: none;
+    }
+    .q-num {
+      font-size: .78rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+    .q-text {
+      font-family: var(--font-head);
+      font-size: 1.25rem;
+      font-weight: 800;
+      line-height: 1.4;
+      margin-bottom: 28px;
+    }
+    .timer-bar {
+      height: 6px;
+      background: var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+    .timer-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), var(--accent2));
+      border-radius: 999px;
+      transition: width .1s linear, background .5s;
+    }
+    .timer-fill.warn { background: linear-gradient(90deg, var(--accent2), var(--red)); }
+
+    /* options */
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 540px) { .options-grid { grid-template-columns: 1fr; } }
+    .option-btn {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 18px;
+      color: var(--text);
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: .95rem;
+      text-align: left;
+      cursor: pointer;
+      transition: transform .15s, border-color .15s, background .15s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .option-btn:hover:not(:disabled) {
+      transform: scale(1.02);
+      border-color: var(--accent);
+      background: rgba(124,106,247,.08);
+    }
+    .option-btn .opt-letter {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .8rem;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+    .option-btn.correct { border-color: var(--green); background: rgba(74,222,128,.1); }
+    .option-btn.wrong   { border-color: var(--red);   background: rgba(248,113,113,.1); }
+    .option-btn.correct .opt-letter { background: var(--green); color: #fff; }
+    .option-btn.wrong   .opt-letter { background: var(--red);   color: #fff; }
+    .option-btn:disabled { cursor: not-allowed; }
+
+    /* feedback */
+    .q-feedback {
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: .9rem;
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+    .q-feedback.show { display: flex; }
+    .q-feedback.ok  { background: rgba(74,222,128,.1);  border: 1px solid rgba(74,222,128,.3);  color: var(--green); }
+    .q-feedback.err { background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.3); color: var(--red); }
+
+    /* result screen */
+    .result-card {
+      text-align: center;
+      padding: 56px 28px;
+    }
+    .result-emoji { font-size: 4.5rem; display: block; margin-bottom: 20px;
+      animation: bounce .6s infinite alternate; }
+    @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-12px); } }
+    .result-score {
+      font-family: var(--font-head);
+      font-size: 3.5rem;
+      font-weight: 900;
+      color: var(--accent2);
+      letter-spacing: -2px;
+    }
+    .result-label { color: var(--muted); margin: 6px 0 24px; }
+    .result-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+    /* xp pop */
+    .xp-pop {
+      position: fixed;
+      bottom: 24px; right: 24px;
+      background: linear-gradient(135deg, var(--accent), #9b8af9);
+      color: #fff;
+      padding: 12px 22px;
+      border-radius: 999px;
+      font-family: var(--font-head);
+      font-weight: 800;
+      font-size: .95rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity .3s, transform .3s;
+      pointer-events: none;
+      z-index: 999;
+    }
+    .xp-pop.show { opacity: 1; transform: translateY(0); }
+
+    /* ──────────────────────────────────────────────
+       LEADERBOARD
+    ────────────────────────────────────────────── */
+    .lb-filters {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .lb-select {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      padding: 8px 14px;
+      font-family: var(--font-body);
+      font-size: .88rem;
+      outline: none;
+      cursor: pointer;
+    }
+    .lb-table { width: 100%; border-collapse: collapse; }
+    .lb-table th {
+      text-align: left;
+      font-size: .75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .lb-table td {
+      padding: 13px 12px;
+      border-bottom: 1px solid rgba(42,47,82,.6);
+      font-size: .9rem;
+    }
+    .lb-table tr:last-child td { border-bottom: none; }
+    .lb-table tr:hover td { background: rgba(124,106,247,.05); }
+    .lb-rank {
+      font-family: var(--font-head);
+      font-weight: 900;
+      width: 36px;
+      text-align: center;
+    }
+    .lb-rank.gold   { color: #f7c06a; }
+    .lb-rank.silver { color: #c0c0c0; }
+    .lb-rank.bronze { color: #cd7f32; }
+    .lb-username { font-weight: 700; }
+    .lb-level { display: inline-block; background: rgba(124,106,247,.15); border: 1px solid rgba(124,106,247,.3); color: var(--accent); font-size: .72rem; font-weight: 800; border-radius: 999px; padding: 2px 8px; }
+
+    /* ──────────────────────────────────────────────
+       LOADING SPINNER
+    ────────────────────────────────────────────── */
+    .spinner {
+      display: inline-block;
+      width: 20px; height: 20px;
+      border: 3px solid rgba(255,255,255,.2);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ──────────────────────────────────────────────
+       UTILITIES
+    ────────────────────────────────────────────── */
+    .section-title {
+      font-family: var(--font-head);
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 14px;
+    }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--gap);
+    }
+    @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+    .mt { margin-top: var(--gap); }
+    .text-center { text-align: center; }
+    .muted { color: var(--muted); }
+
+    /* ──────────────────────────────────────────────
+       CONFETTI (simple canvas)
+    ────────────────────────────────────────────── */
+    #confetti-canvas {
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 9999;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Stars background -->
+<div id="stars"></div>
+
+<!-- Confetti canvas -->
+<canvas id="confetti-canvas"></canvas>
+
+<!-- XP popup -->
+<div class="xp-pop" id="xp-pop">+50 XP ⭐</div>
+
+<div id="app">
+  <nav>
+    <div class="logo"><span>🎮</span> EduGame</div>
+    <div id="nav-user">
+      <div id="user-info">
+        <div id="user-avatar">?</div>
+        <div>
+          <div id="user-name">—</div>
+          <div id="user-xp">0 XP</div>
+        </div>
+      </div>
+      <button class="btn btn-outline btn-sm" id="btn-leaderboard" onclick="showPage('leaderboard')">🏆 Ranking</button>
+      <button class="btn btn-primary btn-sm" id="btn-login-nav" onclick="showPage('auth')">Ingresar</button>
+      <button class="btn btn-danger btn-sm" id="btn-logout" style="display:none" onclick="logout()">Salir</button>
+    </div>
+  </nav>
+
+  <!-- ═══════════════ PAGE: LANDING ═══════════════ -->
+  <div class="page active" id="page-landing">
+    <div class="hero">
+      <div class="hero-badge">🚀 Plataforma educativa gamificada</div>
+      <h1>Aprende más rápido <br><span class="hi">jugando en serio</span></h1>
+      <p>Sube de nivel, gana XP y compite con tu escuela. Matemáticas, Física, Inglés y más materias te esperan.</p>
+      <div class="hero-btns">
+        <button class="btn btn-primary" onclick="showPage('auth')">¡Empezar gratis!</button>
+        <button class="btn btn-outline" onclick="showPage('leaderboard')">Ver ranking 🏆</button>
+      </div>
+    </div>
+    <div class="subjects-float" id="landing-subjects">
+      <!-- filled by JS -->
+    </div>
+  </div>
+
+  <!-- ═══════════════ PAGE: AUTH ═══════════════ -->
+  <div class="page" id="page-auth">
+    <div class="auth-wrap">
+      <div class="auth-tabs">
+        <div class="auth-tab active" id="tab-login" onclick="switchTab('login')">Ingresar</div>
+        <div class="auth-tab" id="tab-register" onclick="switchTab('register')">Crear cuenta</div>
+      </div>
+
+      <!-- LOGIN -->
+      <div id="form-login">
+        <div class="card">
+          <div class="form-group">
+            <label class="form-label">Correo electrónico</label>
+            <input class="form-input" id="login-email" type="email" placeholder="tu@correo.com" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Contraseña</label>
+            <input class="form-input" id="login-pass" type="password" placeholder="••••••" />
+          </div>
+          <button class="btn btn-primary" style="width:100%" id="login-btn" onclick="doLogin()">Ingresar →</button>
+          <div class="msg" id="login-msg"></div>
+        </div>
+      </div>
+
+      <!-- REGISTER -->
+      <div id="form-register" style="display:none">
+        <div class="card">
+          <div class="form-group">
+            <label class="form-label">Correo electrónico</label>
+            <input class="form-input" id="reg-email" type="email" placeholder="tu@correo.com" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Contraseña (mín. 6 caracteres)</label>
+            <input class="form-input" id="reg-pass" type="password" placeholder="••••••" />
+          </div>
+          <div class="two-col">
+            <div class="form-group">
+              <label class="form-label">Nombre de usuario</label>
+              <input class="form-input" id="reg-user" type="text" placeholder="Ejemplo: Luis_17" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Edad</label>
+              <input class="form-input" id="reg-age" type="number" min="6" max="100" placeholder="15" />
+            </div>
+          </div>
+          <button class="btn btn-primary" style="width:100%" id="reg-btn" onclick="doRegister()">Crear cuenta →</button>
+          <div class="msg" id="reg-msg"></div>
+        </div>
+      </div>
+
+      <p class="text-center mt" style="color:var(--muted);font-size:.85rem;cursor:pointer" onclick="showPage('landing')">← Volver al inicio</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════ PAGE: DASHBOARD ═══════════════ -->
+  <div class="page" id="page-dashboard">
+    <div class="dash-header">
+      <div>
+        <div style="color:var(--muted);font-size:.85rem;margin-bottom:4px">Bienvenido de vuelta</div>
+        <div class="dash-greeting">¡Hola, <em id="dash-name">jugador</em>! 👋</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:.78rem;color:var(--muted)">Nivel global</div>
+        <div style="font-family:var(--font-head);font-size:1.6rem;font-weight:900;color:var(--accent2)" id="dash-level">1</div>
+      </div>
+    </div>
+
+    <div class="level-bar-wrap">
+      <div class="level-bar-label">
+        <span id="lb-xp-text">0 XP</span>
+        <span id="lb-next-text">Siguiente nivel: 100 XP</span>
+      </div>
+      <div class="level-bar"><div class="level-bar-fill" id="xp-bar" style="width:0%"></div></div>
+    </div>
+
+    <div class="stats-row" id="stats-row">
+      <div class="stat-card" style="--accent-c:#7c6af744">
+        <div class="stat-num" id="stat-xp">0</div>
+        <div class="stat-label">XP Total</div>
+      </div>
+      <div class="stat-card" style="--accent-c:#f7c06a22">
+        <div class="stat-num" style="color:var(--accent2)" id="stat-level">1</div>
+        <div class="stat-label">Nivel</div>
+      </div>
+      <div class="stat-card" style="--accent-c:#4ade8022">
+        <div class="stat-num" style="color:var(--green)" id="stat-games">0</div>
+        <div class="stat-label">Partidas</div>
+      </div>
+      <div class="stat-card" style="--accent-c:#f8717122">
+        <div class="stat-num" style="color:var(--red)" id="stat-best">0</div>
+        <div class="stat-label">Mejor score</div>
+      </div>
+    </div>
+
+    <div class="section-title mt">Elige una materia</div>
+    <div class="subject-grid" id="subject-grid">
+      <!-- loaded by JS -->
+    </div>
+  </div>
+
+  <!-- ═══════════════ PAGE: GAME ═══════════════ -->
+  <div class="page" id="page-game">
+    <div class="game-header">
+      <button class="btn btn-outline btn-sm" onclick="showPage('dashboard')">← Volver</button>
+      <div class="game-title" id="game-title">Matemáticas</div>
+      <div class="score-display">
+        <div class="score-badge">⭐ <span class="val" id="live-score">0</span></div>
+        <div class="score-badge">❓ <span class="val" id="live-q">1</span>/10</div>
+      </div>
+    </div>
+
+    <!-- question -->
+    <div class="q-card" id="q-card" style="display:none">
+      <div class="q-num" id="q-num">Pregunta 1 de 10</div>
+      <div class="timer-bar"><div class="timer-fill" id="timer-fill"></div></div>
+      <div class="q-text" id="q-text">Cargando pregunta…</div>
+      <div class="options-grid" id="options-grid"></div>
+      <div class="q-feedback" id="q-feedback"></div>
+    </div>
+
+    <!-- loading state -->
+    <div class="card text-center" id="game-loading" style="padding:60px">
+      <div class="spinner" style="width:40px;height:40px;margin:0 auto 20px"></div>
+      <div style="color:var(--muted);font-weight:600">Generando preguntas con IA…</div>
+    </div>
+
+    <!-- result -->
+    <div class="card result-card" id="game-result" style="display:none">
+      <span class="result-emoji" id="result-emoji">🏆</span>
+      <div class="result-score" id="result-score">850</div>
+      <div class="result-label" id="result-label">puntos</div>
+      <div style="color:var(--accent2);font-weight:700;margin-bottom:20px" id="result-xp">+85 XP ganado</div>
+      <div class="result-actions">
+        <button class="btn btn-primary" onclick="startGame(currentSubject)">Jugar de nuevo 🎮</button>
+        <button class="btn btn-outline" onclick="showPage('dashboard')">Ver materias</button>
+        <button class="btn btn-gold" onclick="showPage('leaderboard')">Ver ranking 🏆</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ PAGE: LEADERBOARD ═══════════════ -->
+  <div class="page" id="page-leaderboard">
+    <div class="dash-header">
+      <div>
+        <div class="dash-greeting">🏆 Ranking Global</div>
+        <div style="color:var(--muted);font-size:.9rem;margin-top:4px">Los mejores jugadores de EduGame</div>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="showPage(STATE.token ? 'dashboard' : 'landing')">← Volver</button>
+    </div>
+
+    <div class="lb-filters">
+      <select class="lb-select" id="lb-subject-filter" onchange="loadLeaderboard()">
+        <option value="">Todas las materias</option>
+      </select>
+      <select class="lb-select" id="lb-level-filter" onchange="loadLeaderboard()">
+        <option value="">Todos los niveles</option>
+        <option value="primaria">Primaria</option>
+        <option value="secundaria">Secundaria</option>
+        <option value="preparatoria">Preparatoria</option>
+        <option value="universidad">Universidad</option>
+      </select>
+    </div>
+
+    <div class="card">
+      <div id="lb-body">
+        <div class="text-center" style="padding:40px;color:var(--muted)">
+          <div class="spinner" style="width:32px;height:32px;margin:0 auto 16px"></div>
+          Cargando ranking…
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   CONFIG
+═══════════════════════════════════════════════════════════ */
+const API = window.location.hostname === 'localhost'
+  ? 'http://localhost:3000'
+  : ''; // same origin in production (Render serves both)
+
+/* ═══════════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════════ */
+const STATE = {
+  token: localStorage.getItem('eg_token') || null,
+  profile: JSON.parse(localStorage.getItem('eg_profile') || 'null'),
+  subjects: [],
+  scores: []
+};
+
+/* ═══════════════════════════════════════════════════════════
+   STARS BACKGROUND
+═══════════════════════════════════════════════════════════ */
+(function(){
+  const c = document.getElementById('stars');
+  for(let i=0;i<90;i++){
+    const s=document.createElement('div');
+    s.className='star';
+    const size = Math.random()*2+1;
+    s.style.cssText=`
+      width:${size}px;height:${size}px;
+      left:${Math.random()*100}%;
+      top:${Math.random()*100}%;
+      --d:${2+Math.random()*4}s;
+      --delay:${Math.random()*4}s;
+    `;
+    c.appendChild(s);
+  }
+})();
+
+/* ═══════════════════════════════════════════════════════════
+   PAGE NAVIGATION
+═══════════════════════════════════════════════════════════ */
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if (id === 'leaderboard') { populateLbSubjectFilter(); loadLeaderboard(); }
+  if (id === 'dashboard')   loadDashboard();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ═══════════════════════════════════════════════════════════
+   AUTH TAB
+═══════════════════════════════════════════════════════════ */
+function switchTab(t) {
+  document.getElementById('form-login').style.display    = t==='login'    ? 'block' : 'none';
+  document.getElementById('form-register').style.display = t==='register' ? 'block' : 'none';
+  document.getElementById('tab-login').classList.toggle('active', t==='login');
+  document.getElementById('tab-register').classList.toggle('active', t==='register');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   API HELPER
+═══════════════════════════════════════════════════════════ */
+async function api(method, path, body, token) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (token) headers['Authorization'] = 'Bearer '+token;
+  const r = await fetch(API+path, { method, headers, body: body ? JSON.stringify(body) : undefined });
+  return r.json();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   REGISTER
+═══════════════════════════════════════════════════════════ */
+async function doRegister() {
+  const email    = document.getElementById('reg-email').value.trim();
+  const password = document.getElementById('reg-pass').value;
+  const username = document.getElementById('reg-user').value.trim();
+  const age      = parseInt(document.getElementById('reg-age').value);
+  const btn      = document.getElementById('reg-btn');
+  const msgEl    = document.getElementById('reg-msg');
+
+  setMsg(msgEl, '', '');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>';
+
+  try {
+    const d = await api('POST', '/register', { email, password, username, age });
+    if (d.error) { setMsg(msgEl, d.error, 'err'); }
+    else {
+      setMsg(msgEl, `¡Cuenta creada! Nivel: ${d.education_level}. Ahora ingresa.`, 'ok');
+      setTimeout(() => switchTab('login'), 1800);
+    }
+  } catch(e) { setMsg(msgEl, 'Error de red. Intenta de nuevo.', 'err'); }
+  btn.disabled = false;
+  btn.innerHTML = 'Crear cuenta →';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LOGIN
+═══════════════════════════════════════════════════════════ */
+async function doLogin() {
+  const email    = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-pass').value;
+  const btn      = document.getElementById('login-btn');
+  const msgEl    = document.getElementById('login-msg');
+
+  setMsg(msgEl, '', '');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>';
+
+  try {
+    const d = await api('POST', '/login', { email, password });
+    if (d.error) { setMsg(msgEl, d.error, 'err'); }
+    else {
+      STATE.token   = d.token;
+      STATE.profile = d.profile;
+      localStorage.setItem('eg_token',   d.token);
+      localStorage.setItem('eg_profile', JSON.stringify(d.profile));
+      updateNavUser();
+      showPage('dashboard');
+    }
+  } catch(e) { setMsg(msgEl, 'Error de red. Intenta de nuevo.', 'err'); }
+  btn.disabled = false;
+  btn.innerHTML = 'Ingresar →';
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LOGOUT
+═══════════════════════════════════════════════════════════ */
+function logout() {
+  STATE.token = null; STATE.profile = null;
+  localStorage.removeItem('eg_token');
+  localStorage.removeItem('eg_profile');
+  updateNavUser();
+  showPage('landing');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   NAV USER
+═══════════════════════════════════════════════════════════ */
+function updateNavUser() {
+  const info   = document.getElementById('user-info');
+  const loginB = document.getElementById('btn-login-nav');
+  const logoutB= document.getElementById('btn-logout');
+
+  if (STATE.token && STATE.profile) {
+    const p = STATE.profile;
+    info.style.display   = 'flex';
+    loginB.style.display = 'none';
+    logoutB.style.display= 'inline-flex';
+    document.getElementById('user-avatar').textContent = (p.username||'U')[0].toUpperCase();
+    document.getElementById('user-name').textContent   = p.username;
+    document.getElementById('user-xp').textContent     = `${p.total_xp||0} XP`;
+  } else {
+    info.style.display   = 'none';
+    loginB.style.display = 'inline-flex';
+    logoutB.style.display= 'none';
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   DASHBOARD
+═══════════════════════════════════════════════════════════ */
+async function loadDashboard() {
+  if (!STATE.token) { showPage('auth'); return; }
+
+  document.getElementById('dash-name').textContent = STATE.profile?.username || 'jugador';
+
+  // Load subjects
+  const sd = await api('GET', '/subjects');
+  STATE.subjects = sd.subjects || [];
+  renderLandingSubjects();
+
+  // Load profile with scores
+  const pd = await api('GET', '/profile', null, STATE.token);
+  STATE.scores = pd.scores || [];
+
+  // aggregate stats
+  const totalXP    = STATE.scores.reduce((s, sc) => s+sc.total_xp,   0);
+  const totalGames = STATE.scores.reduce((s, sc) => s+sc.games_played, 0);
+  const bestScore  = STATE.scores.reduce((m, sc) => Math.max(m, sc.best_score), 0);
+  const level      = Math.floor(totalXP / 100) + 1;
+  const xpInLevel  = totalXP % 100;
+
+  document.getElementById('stat-xp').textContent    = totalXP;
+  document.getElementById('stat-level').textContent = level;
+  document.getElementById('stat-games').textContent = totalGames;
+  document.getElementById('stat-best').textContent  = bestScore;
+  document.getElementById('dash-level').textContent = level;
+  document.getElementById('lb-xp-text').textContent    = `${totalXP} XP`;
+  document.getElementById('lb-next-text').textContent   = `Siguiente nivel: ${level*100} XP`;
+  document.getElementById('xp-bar').style.width          = `${xpInLevel}%`;
+
+  // Update nav
+  STATE.profile = { ...STATE.profile, total_xp: totalXP };
+  document.getElementById('user-xp').textContent = `${totalXP} XP`;
+
+  renderSubjectGrid();
+}
+
+function renderSubjectGrid() {
+  const grid = document.getElementById('subject-grid');
+  grid.innerHTML = STATE.subjects.map(sub => {
+    const sc = STATE.scores.find(s => s.subject_slug === sub.slug || s.subject_id);
+    return `
+      <div class="subj-card" onclick="startGame('${sub.slug}','${sub.name}','${sub.icon}')">
+        ${sc ? `<div class="subj-level-badge">Lv ${sc.current_level||1}</div>` : ''}
+        <span class="subj-icon">${sub.icon}</span>
+        <div class="subj-name">${sub.name}</div>
+        <div class="subj-desc">${sub.description||''}</div>
+        <div class="subj-score">
+          ⭐ ${sc ? sc.best_score : 0} mejor &nbsp;·&nbsp; 🎮 ${sc ? sc.games_played : 0} jugadas
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderLandingSubjects() {
+  const c = document.getElementById('landing-subjects');
+  if (!STATE.subjects.length) return;
+  c.innerHTML = STATE.subjects.map(s =>
+    `<div class="subject-chip" onclick="showPage('auth')">${s.icon} ${s.name}</div>`
+  ).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   GAME ENGINE
+═══════════════════════════════════════════════════════════ */
+let currentSubject = null;
+let currentSubjectName = '';
+let currentSubjectIcon = '';
+let questions = [];
+let qIndex    = 0;
+let liveScore = 0;
+let timerInterval = null;
+
+async function startGame(slug, name, icon) {
+  if (!STATE.token) { showPage('auth'); return; }
+  currentSubject     = slug;
+  currentSubjectName = name || slug;
+  currentSubjectIcon = icon || '📚';
+  questions = []; qIndex = 0; liveScore = 0;
+
+  showPage('game');
+  document.getElementById('game-title').textContent      = `${currentSubjectIcon} ${currentSubjectName}`;
+  document.getElementById('live-score').textContent      = '0';
+  document.getElementById('live-q').textContent          = '1';
+  document.getElementById('q-card').style.display        = 'none';
+  document.getElementById('game-result').style.display   = 'none';
+  document.getElementById('game-loading').style.display  = 'block';
+
+  // Ask the Claude API for questions
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        system: `Eres un generador de preguntas para un juego educativo en español.
+Genera exactamente 10 preguntas de opción múltiple sobre la materia indicada.
+Responde SOLO con un array JSON válido, sin explicaciones ni backticks.
+Formato exacto:
+[{"q":"pregunta","options":["A","B","C","D"],"answer":0,"explanation":"explicacion breve"}]
+answer es el índice (0-3) de la opción correcta.
+Las preguntas deben ser variadas, claras y apropiadas para estudiantes de educación básica a universitaria.`,
+        messages: [{ role: 'user', content: `Genera 10 preguntas de ${currentSubjectName}.` }]
+      })
+    });
+    const data = await res.json();
+    const raw  = data.content?.[0]?.text || '[]';
+    questions  = JSON.parse(raw.replace(/```json|```/g, '').trim());
+  } catch(e) {
+    questions = fallbackQuestions(currentSubject);
+  }
+
+  document.getElementById('game-loading').style.display = 'none';
+  document.getElementById('q-card').style.display       = 'block';
+  showQuestion();
+}
+
+function showQuestion() {
+  if (qIndex >= questions.length) { endGame(); return; }
+  const q = questions[qIndex];
+  clearInterval(timerInterval);
+
+  document.getElementById('q-num').textContent  = `Pregunta ${qIndex+1} de ${questions.length}`;
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('live-q').textContent = qIndex+1;
+  document.getElementById('q-feedback').classList.remove('show','ok','err');
+  document.getElementById('q-feedback').textContent = '';
+
+  // Timer
+  let timeLeft = 20;
+  const fill = document.getElementById('timer-fill');
+  fill.style.width = '100%';
+  fill.classList.remove('warn');
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    const pct = (timeLeft/20)*100;
+    fill.style.width = pct+'%';
+    if(timeLeft <= 6) fill.classList.add('warn');
+    if(timeLeft <= 0) { clearInterval(timerInterval); handleAnswer(-1); }
+  }, 1000);
+
+  // Options
+  const grid = document.getElementById('options-grid');
+  const letters = ['A','B','C','D'];
+  grid.innerHTML = q.options.map((opt,i) => `
+    <button class="option-btn" onclick="handleAnswer(${i})">
+      <span class="opt-letter">${letters[i]}</span>
+      ${opt}
+    </button>
+  `).join('');
+}
+
+function handleAnswer(idx) {
+  clearInterval(timerInterval);
+  const q = questions[qIndex];
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach(b => b.disabled = true);
+
+  const fb = document.getElementById('q-feedback');
+  if (idx === q.answer) {
+    btns[idx]?.classList.add('correct');
+    const pts = 100 + Math.floor(Math.random()*50);
+    liveScore += pts;
+    document.getElementById('live-score').textContent = liveScore;
+    fb.innerHTML = `✅ ¡Correcto! ${q.explanation||''}`;
+    fb.classList.add('show','ok');
+  } else {
+    if(idx >= 0) btns[idx]?.classList.add('wrong');
+    if(q.answer >= 0 && q.answer < btns.length) btns[q.answer]?.classList.add('correct');
+    fb.innerHTML = `❌ Incorrecto. ${q.explanation||''}`;
+    fb.classList.add('show','err');
+  }
+
+  qIndex++;
+  setTimeout(showQuestion, 1800);
+}
+
+async function endGame() {
+  document.getElementById('q-card').style.display     = 'none';
+  document.getElementById('game-result').style.display = 'block';
+
+  const emoji = liveScore >= 800 ? '🏆' : liveScore >= 500 ? '🎉' : '💪';
+  document.getElementById('result-emoji').textContent = emoji;
+  document.getElementById('result-score').textContent = liveScore;
+  document.getElementById('result-label').textContent = 'puntos obtenidos';
+
+  // Save score
+  try {
+    const d = await api('POST', '/score', { subject_slug: currentSubject, score: liveScore }, STATE.token);
+    document.getElementById('result-xp').textContent = d.earned_xp ? `+${d.earned_xp} XP — ${d.message}` : '';
+    showXPPop(d.earned_xp || 0);
+    if(liveScore >= 800) launchConfetti();
+  } catch(e) {}
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LEADERBOARD
+═══════════════════════════════════════════════════════════ */
+async function populateLbSubjectFilter() {
+  if (STATE.subjects.length === 0) {
+    const sd = await api('GET', '/subjects');
+    STATE.subjects = sd.subjects || [];
+  }
+  const sel = document.getElementById('lb-subject-filter');
+  if (sel.options.length > 1) return;
+  STATE.subjects.forEach(s => {
+    const o = document.createElement('option');
+    o.value = s.slug; o.textContent = `${s.icon} ${s.name}`;
+    sel.appendChild(o);
+  });
+}
+
+async function loadLeaderboard() {
+  const slug = document.getElementById('lb-subject-filter').value;
+  const lvl  = document.getElementById('lb-level-filter').value;
+  const body = document.getElementById('lb-body');
+  body.innerHTML = `<div class="text-center" style="padding:40px;color:var(--muted)"><div class="spinner" style="width:32px;height:32px;margin:0 auto 16px"></div>Cargando…</div>`;
+
+  let url = '/leaderboard?limit=20';
+  if (slug) url += `&subject_slug=${slug}`;
+  if (lvl)  url += `&education_level=${lvl}`;
+
+  try {
+    const d = await api('GET', url);
+    const rows = d.leaderboard || [];
+    if (!rows.length) { body.innerHTML='<div class="text-center" style="padding:40px;color:var(--muted)">Aún no hay scores. ¡Sé el primero!</div>'; return; }
+    const rankClass = r => r===1?'gold':r===2?'silver':r===3?'bronze':'';
+    const levelLabel = l => ({ primaria:'Primaria', secundaria:'Secundaria', preparatoria:'Prepa', universidad:'Uni' }[l]||l||'—');
+    body.innerHTML = `
+      <table class="lb-table">
+        <thead><tr>
+          <th>#</th><th>Jugador</th><th>Nivel</th><th>Materia</th><th>Score</th><th>XP</th>
+        </tr></thead>
+        <tbody>
+          ${rows.map(r=>`
+            <tr>
+              <td class="lb-rank ${rankClass(r.rank)}">${r.rank<=3?['🥇','🥈','🥉'][r.rank-1]:r.rank}</td>
+              <td class="lb-username">${r.username}</td>
+              <td><span class="lb-level">${levelLabel(r.education_level)}</span></td>
+              <td>${r.subject_icon||'📚'} ${r.subject||'—'}</td>
+              <td style="font-weight:800;color:var(--accent2)">${r.best_score.toLocaleString()}</td>
+              <td style="color:var(--accent)">${r.total_xp.toLocaleString()}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>`;
+  } catch(e) { body.innerHTML='<div class="text-center" style="padding:40px;color:var(--red)">Error cargando ranking.</div>'; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FALLBACK QUESTIONS (offline / error)
+═══════════════════════════════════════════════════════════ */
+function fallbackQuestions(slug) {
+  const bank = {
+    matematicas: [
+      {q:"¿Cuánto es 12 × 8?",options:["96","88","104","84"],answer:0,explanation:"12×8=96"},
+      {q:"¿Cuál es la raíz cuadrada de 144?",options:["11","12","13","14"],answer:1,explanation:"√144=12"},
+      {q:"¿Cuánto es 2³?",options:["6","8","9","12"],answer:1,explanation:"2³=8"},
+      {q:"¿Qué es π (pi) aproximadamente?",options:["3.14","2.72","1.41","1.73"],answer:0,explanation:"π≈3.1416"},
+      {q:"¿Cuántos lados tiene un hexágono?",options:["5","6","7","8"],answer:1,explanation:"Hexágono = 6 lados"},
+      {q:"¿Cuánto es 15% de 200?",options:["25","30","35","40"],answer:1,explanation:"200×0.15=30"},
+      {q:"¿Cuánto es 7² - 5²?",options:["24","14","4","49"],answer:0,explanation:"49-25=24"},
+      {q:"Si x + 5 = 12, ¿cuánto es x?",options:["5","6","7","8"],answer:2,explanation:"x=12-5=7"},
+      {q:"¿Cuántos grados tiene un triángulo?",options:["90","180","270","360"],answer:1,explanation:"La suma de ángulos internos es 180°"},
+      {q:"¿Cuánto es 1000 ÷ 25?",options:["35","40","45","50"],answer:1,explanation:"1000/25=40"}
+    ]
+  };
+  const generic = Array.from({length:10},(_,i)=>({
+    q:`Pregunta ${i+1} de muestra sobre ${slug}`,
+    options:["Opción A","Opción B","Opción C","Opción D"],
+    answer: Math.floor(Math.random()*4),
+    explanation:"Respuesta de muestra."
+  }));
+  return bank[slug] || generic;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   XP POP
+═══════════════════════════════════════════════════════════ */
+function showXPPop(xp) {
+  const el = document.getElementById('xp-pop');
+  el.textContent = `+${xp} XP ganado ⭐`;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CONFETTI
+═══════════════════════════════════════════════════════════ */
+function launchConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  canvas.style.display = 'block';
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const ctx = canvas.getContext('2d');
+  const pieces = Array.from({length:120},()=>({
+    x: Math.random()*canvas.width,
+    y: Math.random()*canvas.height - canvas.height,
+    w: 8+Math.random()*8,
+    h: 4+Math.random()*4,
+    color: ['#7c6af7','#f7c06a','#4ade80','#f87171','#60a5fa'][Math.floor(Math.random()*5)],
+    speed: 2+Math.random()*4,
+    spin: (Math.random()-.5)*.2,
+    angle: Math.random()*Math.PI*2
+  }));
+  let frame;
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(p=>{
+      ctx.save();
+      ctx.translate(p.x,p.y);
+      ctx.rotate(p.angle);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      ctx.restore();
+      p.y += p.speed; p.angle += p.spin;
+      if(p.y > canvas.height) { p.y=-10; p.x=Math.random()*canvas.width; }
+    });
+    frame = requestAnimationFrame(draw);
+  }
+  draw();
+  setTimeout(()=>{ cancelAnimationFrame(frame); canvas.style.display='none'; },4000);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════════════════════ */
+function setMsg(el, text, type) {
+  el.textContent = text;
+  el.className   = 'msg' + (type ? ` show ${type}` : '');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════════ */
+(async function init() {
+  updateNavUser();
+
+  // Load subjects for landing page preview
+  try {
+    const sd = await api('GET', '/subjects');
+    STATE.subjects = sd.subjects || [];
+    renderLandingSubjects();
+  } catch(e) {}
+
+  // If logged in, go to dashboard
+  if (STATE.token) {
+    showPage('dashboard');
+  }
+})();
+</script>
+</body>
+</html>
